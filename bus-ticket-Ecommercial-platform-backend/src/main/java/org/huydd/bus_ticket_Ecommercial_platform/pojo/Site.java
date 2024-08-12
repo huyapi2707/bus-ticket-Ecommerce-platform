@@ -1,5 +1,6 @@
 package org.huydd.bus_ticket_Ecommercial_platform.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Site {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
     @OneToMany(mappedBy = "site")
+    @JsonIgnore
     private Collection<Station> stations;
 
 }
