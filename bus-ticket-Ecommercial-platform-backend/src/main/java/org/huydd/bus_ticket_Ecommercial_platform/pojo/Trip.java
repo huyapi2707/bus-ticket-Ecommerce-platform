@@ -21,9 +21,7 @@ public class Trip {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
-    @Basic
-    @Column(name = "seat_price", nullable = false, precision = 0)
-    private Double seatPrice;
+
     @Basic
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
@@ -35,12 +33,12 @@ public class Trip {
     @Column(name = "depart_at", nullable = false)
     private Timestamp departAt;
 
-    @OneToMany(mappedBy = "trip")
+    @OneToMany(mappedBy = "trip", fetch = FetchType.LAZY)
     private Collection<Ticket> tickets;
     @ManyToOne
     @JoinColumn(name = "car_id", referencedColumnName = "id", nullable = false)
     private Car car;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id", referencedColumnName = "id", nullable = false)
     private Route route;
 

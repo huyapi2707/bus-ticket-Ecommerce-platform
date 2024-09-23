@@ -1,7 +1,9 @@
 package org.huydd.bus_ticket_Ecommercial_platform.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -14,4 +16,8 @@ public class UserDTO {
     private String role;
     private String phone;
     private String avatar;
+
+    @JsonIgnore
+    private MultipartFile file;
+
 }

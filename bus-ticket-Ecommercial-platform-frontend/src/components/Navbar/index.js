@@ -12,7 +12,7 @@ const Navbar = () => {
   const fetchCompanies = async () => {
     try {
       setLoading('flex');
-      const response = await apis(null).get(endpoints.company_list_idName);
+      const response = await apis.get(endpoints.company['list']);
       if (response) {
         setCompanies(response.data);
       }
@@ -38,22 +38,11 @@ const Navbar = () => {
             <div className="logo">
               <img src="/images/logo.png" alt="logo" />
             </div>
-            <p className="fs-4 fw-bold">DỊCH VỤ VẬN TẢI TIỆN LỢI</p>
+            <p className="fs-4 fw-bold">DỊCH VỤ VÉ XE</p>
           </Link>
         </div>
         <div className="col-md-4 py-5">
           <ul className="navbar-nav d-flex flex-row justify-content-evenly py-2">
-            <li className="nav-item">
-              <Link className="nav-link fs-5 text-uppercase">Dịch vụ</Link>
-              <ul className="navbar-nav ul-child">
-                <li className="nav-item">
-                  <Link className="nav-link fs-6">Vé xe</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link fs-6">Giao hàng</Link>
-                </li>
-              </ul>
-            </li>
             <li className="nav-item">
               <Link className="nav-link fs-5 text-uppercase">Công ty</Link>
               <ul className="navbar-nav ul-child ul-child-company">
@@ -81,6 +70,11 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+            <li className="nav-item">
+              <Link className="nav-link fs-5 text-uppercase" to="#">
+                Giới thiệu
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="col-md-3 d-flex py-5">

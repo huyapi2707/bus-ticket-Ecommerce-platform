@@ -1,7 +1,7 @@
 import {useContext, useEffect, useRef, useState} from 'react';
 import './styles.css';
 import {AuthenticationContext, LoadingContext} from '../../config/context';
-import {apis, endpoints} from '../../config/apis';
+import {authenticatedApis, endpoints} from '../../config/apis';
 
 const Profile = () => {
   const {user, setUser} = useContext(AuthenticationContext);
@@ -42,8 +42,8 @@ const Profile = () => {
       if (avatar.current.files.length > 0) {
         formData.append('file', avatar.current.files[0]);
       }
-      const accessToken = localStorage.getItem('accessToken');
-      const response = await apis(accessToken).patch(
+
+      const response = await authenticatedApis().patch(
         endpoints.user(user['id']),
         formData,
         {

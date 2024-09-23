@@ -31,7 +31,7 @@ public class Route {
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp createdAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private BusCompany company;
     @ManyToOne
@@ -48,7 +48,12 @@ public class Route {
 
     )
     private Collection<Station> pickUpPoints;
-    @OneToMany(mappedBy = "route")
+
+    @Basic
+    @Column(name = "seat_price", nullable = false, precision = 0)
+    private Double seatPrice;
+
+    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY)
     private Collection<Trip> trips;
 
     @PostConstruct

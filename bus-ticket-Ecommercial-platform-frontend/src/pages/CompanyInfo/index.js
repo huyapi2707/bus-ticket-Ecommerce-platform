@@ -18,7 +18,7 @@ const CompanyInfo = () => {
   const fetchComanyInfo = async () => {
     try {
       setLoading('flex');
-      const response = await apis(null).get(endpoints.companyInfo(id));
+      const response = await apis.get(endpoints.company.retrieve(id));
       setCompany(response['data']);
     } catch (ex) {
       console.error(ex);
@@ -29,10 +29,10 @@ const CompanyInfo = () => {
   const fetchRoutes = async () => {
     try {
       setLoading('flex');
-      const response = await apis(null).get(
-        endpoints.get_route_by_companyid(id),
-      );
-      setRoutes(response['data']);
+      const response = await apis.get(endpoints.company.routes(1));
+      if (response['data']) {
+        setRoutes(response['data']);
+      }
     } catch (ex) {
       console.error(ex);
     } finally {
@@ -96,12 +96,6 @@ const CompanyInfo = () => {
                   <p>
                     Ngày tham gia:{' '}
                     <span>{moment(company['createdAt']).format('ll')}</span>
-                  </p>
-                </li>
-                <li>
-                  <p>
-                    Vận chuyển hàng hóa:{' '}
-                    <span>{company['isCargoTransport'] ? 'Có' : 'Không'}</span>
                   </p>
                 </li>
               </ul>

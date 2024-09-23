@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import './styles.css';
 import {apis, endpoints} from '../../config/apis';
 import {LoadingContext} from '../../config/context';
@@ -10,16 +10,23 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
   const {setLoading} = useContext(LoadingContext);
   const [pageTotal, setPageTotal] = useState(0);
   const [kw, setKw] = useState('');
+  const isKwChanged = useRef(false);
+  const handleChangeKw = (value) => {
+    setKw(value);
+    isKwChanged.current = true;
+  };
   const fetchData = async () => {
     try {
       setLoading('flex');
-      const response = await apis(null).get(
-        `${dataEndpoint}?page=${page}&kw=${kw}`,
+
+      const response = await apis.get(
+        `${dataEndpoint}?page=${page}&name=${kw}`,
       );
+
       if (response) {
         setData(response['data']['results']);
-        if (pageTotal !== response['data']['pageTotal']) {
-          setPageTotal(response['data']['pageTotal']);
+        if (pageTotal !== response['data']['totalPage']) {
+          setPageTotal(response['data']['totalPage']);
         }
       }
     } catch (ex) {
@@ -30,8 +37,17 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (isKwChanged.current && page === 1) {
+      isKwChanged.current = false;
+      fetchData();
+    } else if (isKwChanged.current && page !== 1) {
+      setPage(1);
+      isKwChanged.current = false;
+    } else {
+      fetchData();
+    }
   }, [page, kw]);
+
   return (
     <div className="container-fluid px-5 mt-5 border-bottom">
       <nav
@@ -58,7 +74,7 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
               className="form-control me-2"
               type="search"
               value={kw}
-              onChange={(e) => setKw(e.target.value)}
+              onChange={(e) => handleChangeKw(e.target.value)}
               placeholder="Search"
               aria-label="Search"
             />

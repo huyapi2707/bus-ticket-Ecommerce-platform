@@ -29,10 +29,10 @@ public class User implements UserDetails {
     @Column(name = "username", nullable = false, length = 255)
     private String username;
     @Basic
-    @Column(name = "first_name", nullable = false, length = 255)
+    @Column(name = "first_name", length = 255)
     private String firstName;
     @Basic
-    @Column(name = "last_name", nullable = false, length = 255)
+    @Column(name = "last_name", length = 255)
     private String lastName;
     @Basic
     @Column(name = "password", nullable = false, length = 255)
@@ -41,10 +41,10 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false, length = 254)
     private String email;
     @Basic
-    @Column(name = "phone", nullable = false, length = 50)
+    @Column(name = "phone", length = 50)
     private String phone;
     @Basic
-    @Column(name = "avatar", nullable = false, length = 255)
+    @Column(name = "avatar", length = 255)
     private String avatar;
     @Basic
     @Column(name = "created_at", nullable = false)
@@ -54,9 +54,9 @@ public class User implements UserDetails {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @OneToOne(mappedBy = "manager", cascade = {CascadeType.DETACH})
+    @OneToOne(mappedBy = "manager", cascade = {CascadeType.DETACH}, fetch = FetchType.LAZY)
     private BusCompany managed;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private Collection<Ticket> tickets;
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
@@ -66,5 +66,10 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(this.getRole().getName());
         return List.of(authority);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isActive;
     }
 }

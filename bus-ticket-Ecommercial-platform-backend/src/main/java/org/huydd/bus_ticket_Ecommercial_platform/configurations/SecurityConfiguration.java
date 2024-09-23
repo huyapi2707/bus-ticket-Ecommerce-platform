@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,9 +37,14 @@ public class SecurityConfiguration {
 
 
     private List<String> publicUrl = List.of(
-            "/api/v1/auth/authenticate",
-            "/api/v1/bus_company/**",
-            "/api/v1/route/**"
+            "/api/v1/auth/**",
+            "/api/v1/bus_companies/**",
+            "/api/v1/routes/**",
+            "/api/v1/payment_methods/**",
+            "/api/v1/tickets/cart",
+            "/api/v1/trips/**",
+            "/online_payment_result/**"
+
     );
     private List<String> companyManagerUrl = List.of();
     private List<String> adminUrl = List.of();
@@ -82,8 +87,9 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://locahost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

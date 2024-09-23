@@ -1,14 +1,28 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
+import com.mongodb.client.model.geojson.LineString;
 import lombok.RequiredArgsConstructor;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.AccessDeniedException;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.UserDTOMapper;
+import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service(value = "userDetailsService")
 @RequiredArgsConstructor
@@ -18,8 +32,14 @@ public class UserService implements UserDetailsService {
 
     private final UserDTOMapper userDTOMapper;
 
+    private final CloudinaryService cloudinaryService;
+
+    private final TicketService ticketService;
+
+
     private boolean checkPermission(User user) {
-        return true;
+        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return authenticatedUser.getId() == user.getId();
     }
 
 
@@ -35,7 +55,7 @@ public class UserService implements UserDetailsService {
 
     public boolean isEmailExist(String email) {
         var user = userRepository.findByEmail(email);
-        if (user.get() != null) {
+        if (user.isPresent() && user.get() != null) {
             return true;
         }
         return false;
@@ -47,4 +67,62 @@ public class UserService implements UserDetailsService {
     User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
+
+    public UserDTO updateUser(Long id, UserDTO payload) throws IllegalAccessException, IOException {
+        User user = userRepository.findById(id).get();
+        if (!checkPermission(user)) throw new AccessDeniedException("Access denied");
+        for (Field payloadField : payload.getClass().getDeclaredFields()) {
+            payloadField.setAccessible(true);
+            Object fieldData = payloadField.get(payload);
+            String fieldName = payloadField.getName();
+            // exclude fields
+            if (fieldName.equals("username") && fieldName.equals("email") && fieldName.equals("password")) {
+                continue;
+            }
+            if ( fieldData != null) {
+                for (Field userField : user.getClass().getDeclaredFields()) {
+                    if (userField.getName().equals(fieldName)) {
+                        userField.setAccessible(true);
+                        userField.set(user, fieldData);
+                        break;
+                    }
+                }
+            }
+
+        }
+        if (payload.getFile() != null) {
+            String url = cloudinaryService.uploadFile(payload.getFile());
+            user.setAvatar(url);
+        }
+        userRepository.save(user);
+        return userDTOMapper.apply(user);
+    }
+
+    public UserDTO getSelfInfo() {
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        return toDTO(user);
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username).orElse(null);
+    }
+
+    public List<TicketDTO> getTickets(Long userId) {
+        if (!checkPermission(userId)) throw  new NoPermissionException("You don't have permission to access this content");
+        User user = userRepository.findById(userId).get();
+        List<Ticket> tickets = (List<Ticket>) user.getTickets();
+        return tickets.stream().map(ticketService::toDTO).collect(Collectors.toList());
+    }
+
+    private boolean checkPermission(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) throw  new IdNotFoundException("No user id found");
+        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userOptional.get().getId().equals(authenticatedUser.getId())) {
+            return true;
+        }
+        return false;
+    }
+
 }

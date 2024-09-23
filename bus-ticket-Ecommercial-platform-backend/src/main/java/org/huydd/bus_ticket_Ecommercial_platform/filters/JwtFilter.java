@@ -3,9 +3,11 @@ package org.huydd.bus_ticket_Ecommercial_platform.filters;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.AccessDeniedException;
 import org.huydd.bus_ticket_Ecommercial_platform.services.JwtService;
 import org.huydd.bus_ticket_Ecommercial_platform.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String username = jwtService.extractUsername(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userService.loadUserByUsername(username);
+                if (!userDetails.isEnabled()) throw new AccessDeniedException("Your account is inactive");
                 if (jwtService.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities()

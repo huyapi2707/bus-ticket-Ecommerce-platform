@@ -12,16 +12,15 @@ const RouteInfo = () => {
   let {id} = useParams();
   const [route, setRoute] = useState(null);
   const {setLoading} = useContext(LoadingContext);
-  const {cartDispatcher} = useContext(CartContext);
-  const [withCargo, setWithCargo] = useState(true);
+  const {cart, cartDispatcher} = useContext(CartContext);
+  const [arrSelectedSeats, setArrSelectedSeats] = useState([]);
   const [trips, setTrips] = useState([]);
   const [tripId, setTripId] = useState(null);
   const [seatDetails, setSeatDetails] = useState([]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
 
   const addToCart = () => {
-    if (selectedSeats.length === 0) {
-      toast.warning('Please select your seat', {
+    if (arrSelectedSeats.length === 0) {
+      toast.warning('Hãy chọn ghế bạn muốn', {
         position: 'top-center',
         autoClose: 4000,
         closeOnClick: true,
@@ -32,12 +31,10 @@ const RouteInfo = () => {
       });
       return;
     }
-    const payload = selectedSeats.map((seat) => {
+    const payload = arrSelectedSeats.map((seat) => {
       return {
-        routeId: id,
         tripId: tripId,
-        seatId: seat,
-        withCargo: withCargo,
+        seatInfo: seat,
       };
     });
 
@@ -47,24 +44,50 @@ const RouteInfo = () => {
     });
   };
 
-  const handleToggleSeat = (event) => {
-    if (event.target.checked) {
-      const newSelectedSeats = selectedSeats;
-      newSelectedSeats.push(event.target.value);
-      setSelectedSeats(newSelectedSeats);
-    } else {
-      const id = event.target.value;
-      const index = selectedSeats.indexOf(id);
-      const newSelectedSeats = selectedSeats;
-      newSelectedSeats.splice(index, 1);
-      setSelectedSeats(newSelectedSeats);
+  useEffect(() => {
+    if (cart['data'].length === 0) {
+      setArrSelectedSeats([]);
+    } else if (tripId && cart['data'].length > 0) {
+      const arrCart = [];
+      cart['data'].forEach((item) => {
+        if (item['tripId'] === tripId) {
+          arrCart.push(item['seatInfo']);
+        }
+      });
+      setArrSelectedSeats(arrCart);
     }
+  }, [cart['key'], tripId]);
+
+  const checkedSeat = (seatId) => {
+    return arrSelectedSeats.find((item) => item['id'] === seatId);
+  };
+
+  const handleToggleSeat = (event) => {
+    const target = {
+      id: parseInt(event['target']['value']),
+      code: event['target']['id'],
+      luggage: 1,
+    };
+
+    if (event.target.checked) {
+      setArrSelectedSeats((arrSelectedSeats) => [...arrSelectedSeats, target]);
+    } else {
+      setArrSelectedSeats((arrSelectedSeats) =>
+        arrSelectedSeats.filter((item) => item['id'] !== target['id']),
+      );
+    }
+  };
+
+  const setLuggage = (value, index) => {
+    const newArr = arrSelectedSeats;
+    newArr[index]['luggage'] = value;
+    setArrSelectedSeats([...newArr]);
   };
 
   const fetchAllTrips = async () => {
     setLoading('flex');
     try {
-      const response = await apis(null).get(endpoints.route_trip_list(id));
+      const response = await apis.get(endpoints.route.trips(id));
       if (response) {
         setTrips(response['data']);
         setTripId(response['data'][0]['id']);
@@ -79,8 +102,9 @@ const RouteInfo = () => {
   const fetchRouteInfo = async () => {
     try {
       setLoading('flex');
-      const response = await apis(null).get(endpoints.route_info(id));
+      const response = await apis.get(endpoints.route.retrieve(id));
       const data = response['data'];
+
       setRoute(data);
     } catch (ex) {
       console.error(ex);
@@ -92,17 +116,16 @@ const RouteInfo = () => {
   const fetchTripSeatDetails = async () => {
     setLoading('flex');
     try {
-      const response = await apis(null).get(
-        endpoints.trip_seat_details(tripId),
-      );
-      const availableSeat = response['data']['availableSeat'];
-      const unAvailableSeat = response['data']['unAvailableSeat'];
-      let seats = availableSeat.map((a) => {
+      const response = await apis.get(endpoints.trip.seats(tripId));
+      const availableSeats = response['data']['availableSeats'];
+      const unAvailableSeats = response['data']['unAvailableSeats'];
+
+      let seats = availableSeats.map((a) => {
         a['available'] = true;
         return a;
       });
       seats = seats.concat(
-        unAvailableSeat.map((a) => {
+        unAvailableSeats.map((a) => {
           a['available'] = false;
           return a;
         }),
@@ -110,6 +133,7 @@ const RouteInfo = () => {
       seats.sort((a, b) => {
         return a['id'] - b['id'];
       });
+
       setSeatDetails(seats);
     } catch (ex) {
       console.error(ex);
@@ -135,7 +159,10 @@ const RouteInfo = () => {
         {route && (
           <div className="col-md-6 p-3">
             <div className="border-bottom mb-4">
-              <Link className="fs-2" to={`/company/${route['company']['id']}`}>
+              <Link
+                className="fs-2 text-decoration-none"
+                to={`/company/${route['company']['id']}`}
+              >
                 {route['company']['name']}
               </Link>
             </div>
@@ -150,20 +177,14 @@ const RouteInfo = () => {
                     {utils.formatToVND(route['seatPrice'])}
                   </span>
                 </li>
-                <li className="mb-2">
-                  Giá giao hàng:{' '}
-                  <span className="text-success">
-                    {utils.formatToVND(route['cargoPrice'])}
-                  </span>
-                </li>
 
                 <li className="row mb-2">
                   <div className="col-md-6">
                     <p>
-                      Bắt đầu từ: <span>{route['fromStation']['address']}</span>
+                      Bắt đầu từ: <span>{route['fromStation']['name']}</span>
                     </p>
                     <iframe
-                      src={route['fromStation']['mapUrl']}
+                      src={route['fromStation']['mapLocation']}
                       width="300"
                       height="300"
                       allowFullScreen={true}
@@ -173,10 +194,10 @@ const RouteInfo = () => {
                   </div>
                   <div className="col-md-6">
                     <p>
-                      Đến: <span>{route['toStation']['address']}</span>
+                      Điểm đến: <span>{route['toStation']['name']}</span>
                     </p>
                     <iframe
-                      src={route['toStation']['mapUrl']}
+                      src={route['toStation']['mapLocation']}
                       width="300"
                       height="300"
                       allowFullScreen={true}
@@ -191,17 +212,38 @@ const RouteInfo = () => {
               <button onClick={addToCart} className="btn btn-primary">
                 Thêm vào giỏ hàng
               </button>
-              <div className="form-check ms-3">
-                <input
-                  checked={withCargo}
-                  className="form-check-input"
-                  type="checkbox"
-                  onChange={(event) => setWithCargo(event.target.checked)}
-                  id="flexCheckChecked"
-                />
-                <label className="form-check-label" htmlFor="flexCheckChecked">
-                  Có giao hàng
-                </label>
+            </div>
+            <div className="mt-5 ">
+              <div>
+                {arrSelectedSeats.length > 0 && (
+                  <p>Khối lượng hàng hóa mang theo</p>
+                )}
+              </div>
+              <div>
+                {arrSelectedSeats.map((k, index) => {
+                  return (
+                    <div key={index} className="my-2 row">
+                      <label
+                        htmlFor={'luggage_' + k['code']}
+                        className="col-sm-2 col-form-label"
+                      >
+                        Ghế số {k['code']}:
+                      </label>
+                      <div className="col-sm-3">
+                        <input
+                          placeholder="kg"
+                          type="number"
+                          className="form-control"
+                          id={'luggage_' + k['code']}
+                          value={arrSelectedSeats[index]['luggage']}
+                          onChange={(event) =>
+                            setLuggage(event.target.value, index)
+                          }
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -246,10 +288,11 @@ const RouteInfo = () => {
                         value={seat['id']}
                         type="checkbox"
                         className="btn-check"
-                        id={seat['id']}
+                        id={seat['code']}
                         autoComplete="off"
                         onChange={(event) => handleToggleSeat(event)}
                         disabled={!seat['available']}
+                        checked={checkedSeat(seat['id'])}
                       />
                       <label
                         className={[
@@ -258,7 +301,7 @@ const RouteInfo = () => {
                             ? 'btn-outline-primary'
                             : 'btn-danger',
                         ].join(' ')}
-                        htmlFor={seat['id']}
+                        htmlFor={seat['code']}
                       >
                         {seat['code']}
                       </label>

@@ -17,7 +17,9 @@ public class RouteDTOMapper implements Function<Route, RouteDTO> {
     public RouteDTO apply(Route route) {
         return RouteDTO.builder()
                 .id(route.getId())
+                .isActive(route.getIsActive())
                 .name(route.getName())
+                .seatPrice(route.getSeatPrice())
                 .fromStation(route.getFromStation())
                 .pickUpPoints(route.getPickUpPoints())
                 .toStation(route.getToStation())

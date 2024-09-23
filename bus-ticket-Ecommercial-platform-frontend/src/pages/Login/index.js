@@ -41,8 +41,8 @@ const Login = () => {
 
     try {
       setLoading('flex');
-      const response = await apis(null)
-        .post(endpoints.login, {
+      const response = await apis
+        .post(endpoints['auth']['authenticate'], {
           username: username,
           password: password,
         })
@@ -74,7 +74,7 @@ const Login = () => {
       setLoading('flex');
       const {email, family_name, given_name, name, picture} =
         jwtDecode(credential);
-      const response = await apis(null).post(endpoints['login_with_google'], {
+      const response = await apis.post(endpoints['auth']['loginWithGoogle'], {
         firstName: family_name,
         lastName: given_name,
         username: email,

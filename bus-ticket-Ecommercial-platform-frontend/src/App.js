@@ -12,7 +12,7 @@ import Loading from './components/Loading';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import {apis, endpoints} from './config/apis';
+import {authenticatedApis, endpoints} from './config/apis';
 import CartIcon from './components/CartIcon';
 import AppRouter from './routes';
 import {GoogleOAuthProvider} from '@react-oauth/google';
@@ -25,10 +25,10 @@ function App() {
     data: [],
   });
 
-  const fetchUserInfor = async (accessToken) => {
+  const fetchUserInfor = async () => {
     try {
       setLoading('flex');
-      const response = await apis(accessToken).get(endpoints.userInfor);
+      const response = await authenticatedApis().get(endpoints.user['self']);
       if (response) {
         setUser(response['data']);
       } else {
@@ -43,13 +43,13 @@ function App() {
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken && !user) {
-      fetchUserInfor(accessToken);
+      fetchUserInfor();
     }
   }, []);
 
   useEffect(() => {
     const localStorageItem = localStorage.getItem('cart');
-    if (cart['key'] === '' && localStorageItem !== '' && !localStorageItem) {
+    if (localStorageItem && cart['key'] === '' && localStorageItem !== '') {
       try {
         const temp = JSON.parse(localStorageItem);
         if (temp.length > 0) {
@@ -68,7 +68,9 @@ function App() {
 
   return (
     <div className="container-fluid">
-      <GoogleOAuthProvider clientId="74220990475-fqfc35bpnobkpphc31ik8mnuq1fm93og.apps.googleusercontent.com">
+      <GoogleOAuthProvider
+        clientId={process.env.REACT_APP_GOOGLE_OAUTH2_CLIENT_ID}
+      >
         <AuthenticationContext.Provider value={{user, setUser}}>
           <LoadingContext.Provider value={{loading, setLoading}}>
             <CartContext.Provider value={{cart, cartDispatcher}}>

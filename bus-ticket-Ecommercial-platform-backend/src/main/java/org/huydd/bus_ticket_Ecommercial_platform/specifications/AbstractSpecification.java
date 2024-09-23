@@ -29,6 +29,7 @@ public abstract class AbstractSpecification<T> implements Specification<T> {
                         root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
             } else {
                 return builder.equal(root.get(criteria.getKey()), criteria.getValue());
+
             }
         }
         return null;

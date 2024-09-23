@@ -5,6 +5,7 @@ import {apis, endpoints} from '../../config/apis';
 import {Link} from 'react-router-dom';
 import moment from 'moment';
 import * as ultils from '../../config/utils';
+import {type} from '@testing-library/user-event/dist/type';
 
 const Cart = () => {
   const {cart, cartDispatcher} = useContext(CartContext);
@@ -20,26 +21,24 @@ const Cart = () => {
     });
   };
 
-  const handleToggleWithCargo = (event, tripId, seatId) => {
+  const handleClearCart = () => {
     cartDispatcher({
-      type: 'WITH_CARGO',
-      payload: {
-        tripId: tripId,
-        seatId: seatId,
-        withCargo: event.target.checked,
-      },
+      type: 'CLEAR_CART',
     });
   };
-  const fetchTickets = async () => {
-    const response = await apis(null).post(
-      endpoints.cart_details,
-      cart['data'],
-    );
 
-    setTickets(response['data']);
+  const fetchTickets = async () => {
+    const response = await apis.post(endpoints['ticket']['cart'], cart['data']);
+    if (response) {
+      setTickets(response['data']);
+    }
   };
   useEffect(() => {
-    fetchTickets();
+    if (cart['data'].length > 0) {
+      fetchTickets();
+    } else {
+      setTickets([]);
+    }
   }, [cart['key']]);
   return (
     <div
@@ -54,7 +53,7 @@ const Cart = () => {
           className="offcanvas-title mt-5  p-3"
           id="offcanvasWithBothOptionsLabel"
         >
-          Giỏ hàng
+          Giỏ vé
         </h5>
         <button
           type="button"
@@ -68,7 +67,6 @@ const Cart = () => {
           <thead>
             <tr>
               <th>Thông tin vé</th>
-              <th>Giao hàng</th>
               <th>Thao tác</th>
             </tr>
           </thead>
@@ -80,7 +78,7 @@ const Cart = () => {
                     <ul className="list-unstyled">
                       <li>
                         <Link className="nav-link">
-                          Mã chuyến:{' '}
+                          Tên chuyến:{' '}
                           <span className="fw-bold">
                             {ticket['routeInfo']['name']}
                           </span>
@@ -103,44 +101,28 @@ const Cart = () => {
                         Khởi hành lúc:{' '}
                         {moment(ticket['tripInfo']['departAt']).format('LLL')}
                       </li>
-                      <li>Mã ghế: {ticket['seat']['code']}</li>
+                      <li>Mã ghế: {ticket['seatInfo']['code']}</li>
+                      <li>
+                        <Link className="nav-link">
+                          Khối lượng hành lý:{' '}
+                          <span className="fw-bold">
+                            {ticket['luggage']} kg
+                          </span>{' '}
+                        </Link>
+                      </li>
                       <li>
                         Giá vé:{' '}
                         {ultils.formatToVND(ticket['routeInfo']['seatPrice'])}
                       </li>
-                      <li>
-                        Giá giao hàng:{' '}
-                        {ultils.formatToVND(ticket['routeInfo']['cargoPrice'])}
-                      </li>
-                      <li>
-                        Tổng cộng:{' '}
-                        {ultils.formatToVND(
-                          ticket['routeInfo']['seatPrice'] +
-                            ticket['routeInfo']['cargoPrice'],
-                        )}
-                      </li>
                     </ul>
                   </td>
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={ticket['routeInfo']['cargoPrice'] > 0}
-                      onChange={(event) =>
-                        handleToggleWithCargo(
-                          event,
-                          ticket['tripInfo']['id'],
-                          ticket['seat']['id'],
-                        )
-                      }
-                    />
-                  </td>
+
                   <td>
                     <button
                       onClick={() =>
                         handleDeleteCart(
                           ticket['tripInfo']['id'],
-                          ticket['seat']['id'],
+                          ticket['seatInfo']['id'],
                         )
                       }
                       className="btn btn-danger"
@@ -154,9 +136,12 @@ const Cart = () => {
           </tbody>
         </table>
         <div className="d-flex justify-content-end">
-          <Link to={'/checkout'} className="btn btn-primary">
+          <Link to={'/checkout'} className="btn btn-primary mx-1">
             Thanh toán
           </Link>
+          <button onClick={handleClearCart} className="btn btn-danger mx-1">
+            Xóa tất cả
+          </button>
         </div>
       </div>
     </div>

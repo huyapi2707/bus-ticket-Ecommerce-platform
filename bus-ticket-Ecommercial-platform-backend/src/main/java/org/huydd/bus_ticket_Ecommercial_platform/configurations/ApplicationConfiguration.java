@@ -1,56 +1,41 @@
 package org.huydd.bus_ticket_Ecommercial_platform.configurations;
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
+import java.util.Arrays;
 import java.util.Properties;
 
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfiguration {
 
-    @Bean
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+    private final Environment environment;
 
-        mailSender.setUsername("my.gmail@gmail.com");
-        mailSender.setPassword("password");
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
 
-        return mailSender;
-    }
 
     @Bean
     public Cloudinary cloudinary() {
+        String cloudName = environment.getProperty("cloudinary.cloudName");
+        String apiKey = environment.getProperty("cloudinary.apiKey");
+        String apiSerect = environment.getProperty("cloudinary.apiSerect");
         Cloudinary c = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "ddgtjayoj",
-                "api_key", "218226613255948",
-                "api_secret", "z6oMCYbbKpfVuEgiW5VzfhE5IQc",
+                "cloud_name", cloudName,
+                "api_key", apiKey,
+                "api_secret", apiSerect,
                 "secure", true
         ));
         return c;
     }
 
-    @Bean
-    public WebMvcConfigurer webMvcConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("**").allowedOrigins("http://localhost:3000");
-            }
-        };
-    }
 
 }

@@ -16,4 +16,8 @@ public class PaymentMethodService {
     public List<PaymentMethod> getAll() {
         return paymentMethodRepository.findAllByIsActive(true);
     }
+
+    public PaymentMethod getById(Long id) {
+        return paymentMethodRepository.findById(id).get();
+    }
 }

@@ -46,13 +46,13 @@ public class BusCompany {
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp createdAt;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", referencedColumnName = "id", nullable = false)
     private User manager;
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private Collection<Car> ownedCars;
 
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private Collection<Route> routes;
 
     @PostConstruct

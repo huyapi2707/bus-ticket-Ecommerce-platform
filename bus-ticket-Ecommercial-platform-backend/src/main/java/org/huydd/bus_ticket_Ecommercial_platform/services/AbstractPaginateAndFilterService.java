@@ -3,10 +3,9 @@ package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 
 import lombok.RequiredArgsConstructor;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.BusCompanyDTO;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.PageableResponse;
+import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.SearchCriteria;
-import org.huydd.bus_ticket_Ecommercial_platform.pojo.BusCompany;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,20 +23,29 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class AbstractPaginateAndFilterService {
-    protected final FilterAndPaginateRepository repository;
-    protected final Function dtoMapper;
+    private final FilterAndPaginateRepository repository;
+    private final Function dtoMapper;
 
     public Object toDTO(Object obj) {
         return  dtoMapper.apply(obj);
     }
 
-    public Object getAllAndFilter(Map<String, String> params, Class<? extends Specification>  specificationClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+    public Object getById(Object id) {
+       var result =  repository.findById(id);
+       if (result.isPresent()) {
+           return result.get();
+       } else throw new IdNotFoundException("Id not found");
+    }
+
+
+    public Object getAllAndFilter(Map<String, Object> params, Class<? extends Specification>  specificationClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List<Specification> specifications = new ArrayList<>();
         boolean isActiveKeyExist = params.containsKey("isActive");
 
         Boolean isActive = true;
         if (isActiveKeyExist) {
-            isActive = Boolean.valueOf(params.get("isActive"));
+            isActive = Boolean.valueOf((Boolean) params.get("isActive"));
             params.remove("isActive");
         }
 
@@ -45,9 +53,9 @@ public abstract class AbstractPaginateAndFilterService {
         Pageable pageRequest = null;
         if (isPageKeyExist && params.get("page") != null) {
             try {
-                int page = Integer.parseInt(params.get("page"));
+                int page = Integer.parseInt((String) params.get("page"));
                 if ( page > 0) {
-                    pageRequest = PageRequest.of(page - 1, 16);
+                    pageRequest = PageRequest.of(page - 1, 15);
                     params.remove("page");
                 }
 
@@ -59,9 +67,12 @@ public abstract class AbstractPaginateAndFilterService {
         specifications.add(specificationClass.getDeclaredConstructor(SearchCriteria.class)
                 .newInstance(new SearchCriteria("isActive", ":", isActive)));
 
-        for (Map.Entry<String, String> entry : params.entrySet()) {
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
-            Object value = new String (entry.getValue());
+            Object value =  entry.getValue();
+            if (value.getClass() == String.class) {
+                value = value.toString();
+            }
             specifications.add(specificationClass.getDeclaredConstructor(SearchCriteria.class)
                     .newInstance(new SearchCriteria(key, ":", value)));
 

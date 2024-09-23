@@ -27,10 +27,10 @@ public class Car {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_owner_id", referencedColumnName = "id", nullable = false)
     private BusCompany company;
-    @OneToMany(mappedBy = "car", cascade = {CascadeType.PERSIST})
+    @OneToMany(mappedBy = "car", cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Collection<Seat> seats;
 
     @PostConstruct

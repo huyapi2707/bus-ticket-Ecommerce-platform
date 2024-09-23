@@ -6,10 +6,6 @@ import AuthenticatedRoute from './AuthenticatedRoute';
 import Checkout from '../pages/Checkout';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
-import CreateCompany from '../pages/CreateCompany';
-import ManageCompany from '../pages/ManageCompany';
-import CreateRoute from '../pages/CreateRoute';
-import CreateTrip from '../pages/CreateTrip';
 import Home from '../pages/Home';
 import {endpoints} from '../config/apis';
 import PaymentResult from '../pages/PaymentResult';
@@ -28,15 +24,14 @@ const AppRouter = () => {
             element={
               <>
                 <Grid
-                  title="Công ty"
-                  dataEndpoint={endpoints.company_list}
-                  breadcrumb={['Trang chủ', 'Công ty']}
-                />
-
-                <Grid
                   title="Tuyến xe"
-                  dataEndpoint={endpoints.route_list}
+                  dataEndpoint={endpoints.route['list']}
                   breadcrumb={['Trang chủ', 'Tuyến xe']}
+                />
+                <Grid
+                  title="Công ty"
+                  dataEndpoint={endpoints.company['list']}
+                  breadcrumb={['Trang chủ', 'Công ty']}
                 />
               </>
             }
@@ -65,38 +60,6 @@ const AppRouter = () => {
               <AuthenticatedRoute>
                 <Profile />
               </AuthenticatedRoute>
-            }
-          />
-          <Route
-            path="/create-company"
-            element={
-              <AuthenticatedRoute>
-                <CreateCompany />
-              </AuthenticatedRoute>
-            }
-          />
-          <Route
-            path="/manage-company"
-            element={
-              <ManagerRoute>
-                <ManageCompany />
-              </ManagerRoute>
-            }
-          />
-          <Route
-            path="/create-route"
-            element={
-              <ManagerRoute>
-                <CreateRoute />
-              </ManagerRoute>
-            }
-          />
-          <Route
-            path="/register-trip"
-            element={
-              <ManagerRoute>
-                <CreateTrip />
-              </ManagerRoute>
             }
           />
         </Route>

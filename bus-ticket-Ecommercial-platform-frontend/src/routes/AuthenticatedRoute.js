@@ -2,7 +2,7 @@ import {useContext} from 'react';
 
 import {Navigate, useLocation} from 'react-router-dom';
 import {AuthenticationContext} from '../config/context';
-import LoadingPrototype from '../components/LoadingPrototype';
+import LoadingPage from '../components/LoadingPage';
 
 const AuthenticatedRoute = ({children}) => {
   const {user} = useContext(AuthenticationContext);
@@ -11,7 +11,7 @@ const AuthenticatedRoute = ({children}) => {
   const accessToken = localStorage.getItem('accessToken');
   if (!user) {
     if (accessToken) {
-      return <LoadingPrototype />;
+      return <LoadingPage />;
     } else {
       return <Navigate to={{pathname: '/login'}} state={{from: pathname}} />;
     }

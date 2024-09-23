@@ -5,14 +5,14 @@ import lombok.Data;
 
 
 @Builder
-public record BusCompanyDTO(
-        Long id,
-        String name,
-        String avatar,
-        String phone,
-        String email,
-        Boolean isVerified,
-        Boolean isActive,
-        Long managerId
-) {
+@Data
+public class BusCompanyDTO {
+    private Long id;
+    private String name;
+    private String avatar;
+    private String phone;
+    private String email;
+    private Boolean isVerified;
+    private Boolean isActive;
+    private Long managerId;
 }

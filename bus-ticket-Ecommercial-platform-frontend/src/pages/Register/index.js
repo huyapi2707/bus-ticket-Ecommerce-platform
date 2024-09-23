@@ -6,7 +6,7 @@ import * as validator from '../../config/validator';
 import {LoadingContext, AuthenticationContext} from '../../config/context';
 import {apis, endpoints} from '../../config/apis';
 import {toast} from 'react-toastify';
-import {Link} from 'react-router-dom';
+import {Link, Navigate, useNavigate} from 'react-router-dom';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +15,7 @@ const Register = () => {
   const [isCompanyManager, setIsCompanyManager] = useState(false);
   const {setLoading} = useContext(LoadingContext);
   const {setUser} = useContext(AuthenticationContext);
+  const navigator = useNavigate();
   const validate = () => {
     if (password !== rePassword) {
       return 'Mật khẩu không khớp';
@@ -44,8 +45,8 @@ const Register = () => {
     } else {
       try {
         setLoading('flex');
-        const response = await apis(null)
-          .post(endpoints.register, {
+        const response = await apis
+          .post(endpoints['auth']['register'], {
             username: username,
             password: password,
             email: email,
@@ -67,6 +68,7 @@ const Register = () => {
         if (response.status === 201) {
           localStorage.setItem('accessToken', response.data.accessToken);
           setUser(response.data['userDetails']);
+          navigator('/');
         }
       } catch (error) {
         console.log(error);

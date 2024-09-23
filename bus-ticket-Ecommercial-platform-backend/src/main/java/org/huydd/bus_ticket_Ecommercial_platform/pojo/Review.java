@@ -29,7 +29,7 @@ public class Review {
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp createdAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id", referencedColumnName = "id", nullable = false)
     private Ticket ticket;
 

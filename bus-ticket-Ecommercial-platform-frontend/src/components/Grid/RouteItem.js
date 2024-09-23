@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import * as utils from '../../config/utils';
+
 const RouteItem = ({value}) => {
   return (
     <Link
@@ -13,21 +13,14 @@ const RouteItem = ({value}) => {
       <div className="mt-3">
         <ul className="nav d-flex flex-column">
           <li className="nav-item">
-            Tuyến: {value['fromStation']['address']} -{' '}
-            {value['toStation']['address']}
+            <p className="text-primary">
+              {value['fromStation']['name']} - {value['toStation']['name']}
+            </p>
           </li>
           <li className="nav-item">Công ty: {value['company']['name']}</li>
           <li className="nav-item">
             Giá vé:{' '}
-            <span className="text-primary">
-              {utils.formatToVND(value['seatPrice'])}
-            </span>
-          </li>
-          <li className="nav-item">
-            Giá giao hàng:{' '}
-            <span className="text-primary">
-              {utils.formatToVND(value['cargoPrice'])}
-            </span>
+            <span className="text-danger fw-bold">{value['seatPrice']}</span>
           </li>
         </ul>
       </div>
