@@ -33,6 +33,7 @@ public class TicketDTOMapper implements Function<Ticket, TicketDTO> {
                 .paymentMethod(ticket.getPaymentMethod())
                 .seatPrice(ticket.getSeatPrice())
                 .routeInfo(route)
+                .status(ticket.getStatus())
                 .luggage(ticket.getCarryOnLuggageKg())
                 .seatInfo(seat)
                 .id(ticket.getId())

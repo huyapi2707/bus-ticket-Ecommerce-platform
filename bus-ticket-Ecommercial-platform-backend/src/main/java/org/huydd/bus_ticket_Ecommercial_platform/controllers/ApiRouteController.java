@@ -19,7 +19,7 @@ public class ApiRouteController {
 
     @GetMapping("/")
     public ResponseEntity<Object> list(@RequestParam Map<String, Object> params) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        return ResponseEntity.ok(routeService.getAllAndFilter(params, RouteSpecification.class));
+        return ResponseEntity.ok(routeService.getAllAndFilter(params, RouteSpecification.class, 15));
     }
 
     @GetMapping("/{id}")

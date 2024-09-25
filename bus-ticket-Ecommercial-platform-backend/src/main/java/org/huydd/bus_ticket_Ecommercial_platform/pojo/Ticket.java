@@ -55,7 +55,7 @@ public class Ticket {
     private Trip trip;
 
     @ManyToOne
-    @JoinColumn(name = "online_payment_result")
+    @JoinColumn(name = "online_payment_result_id")
     private OnlinePaymentResult onlinePaymentResult;
 
 }

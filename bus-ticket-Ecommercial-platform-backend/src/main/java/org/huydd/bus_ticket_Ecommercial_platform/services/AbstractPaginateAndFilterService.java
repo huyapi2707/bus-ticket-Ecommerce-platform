@@ -39,15 +39,10 @@ public abstract class AbstractPaginateAndFilterService {
     }
 
 
-    public Object getAllAndFilter(Map<String, Object> params, Class<? extends Specification>  specificationClass) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public Object getAllAndFilter(Map<String, Object> params,
+                                  Class<? extends Specification>  specificationClass,
+                                  int pageSize) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         List<Specification> specifications = new ArrayList<>();
-        boolean isActiveKeyExist = params.containsKey("isActive");
-
-        Boolean isActive = true;
-        if (isActiveKeyExist) {
-            isActive = Boolean.valueOf((Boolean) params.get("isActive"));
-            params.remove("isActive");
-        }
 
         boolean isPageKeyExist = params.containsKey("page");
         Pageable pageRequest = null;
@@ -55,7 +50,7 @@ public abstract class AbstractPaginateAndFilterService {
             try {
                 int page = Integer.parseInt((String) params.get("page"));
                 if ( page > 0) {
-                    pageRequest = PageRequest.of(page - 1, 15);
+                    pageRequest = PageRequest.of(page - 1, pageSize);
                     params.remove("page");
                 }
 
@@ -63,9 +58,6 @@ public abstract class AbstractPaginateAndFilterService {
                 e.printStackTrace();
             }
         }
-
-        specifications.add(specificationClass.getDeclaredConstructor(SearchCriteria.class)
-                .newInstance(new SearchCriteria("isActive", ":", isActive)));
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();

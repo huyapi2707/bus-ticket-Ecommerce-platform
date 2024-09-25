@@ -6,7 +6,9 @@ import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.TicketDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.*;
+import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketRepository;
+import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketStatusRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.requestObjects.TicketRequest;
 import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.CheckoutResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
@@ -25,12 +27,11 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-
-public class TicketService {
+public class TicketService extends AbstractPaginateAndFilterService {
 
     private final RouteService routeService;
     private final TripService tripService;
@@ -46,15 +47,32 @@ public class TicketService {
 
     private final TicketDTOMapper ticketDTOMapper;
 
+    private final ConfigurationService configurationService;
 
-    public void saveAll(List<Ticket> tickets) {
-        ticketRepository.saveAll(tickets);
+
+    public TicketService(TicketRepository repository,
+                         TicketDTOMapper dtoMapper,
+                         RouteService routeService,
+                         TripService tripService,
+                         PaymentMethodService paymentMethodService,
+                         TicketRepository ticketRepository,
+                         PaymentService paymentService,
+                         TripSeatInfoService tripSeatInfoService,
+                         TicketStatusService ticketStatusService,
+                         TicketDTOMapper ticketDTOMapper,
+                         ConfigurationService configurationService) {
+        super(repository, dtoMapper);
+        this.routeService = routeService;
+        this.tripService = tripService;
+        this.paymentMethodService = paymentMethodService;
+        this.ticketRepository = ticketRepository;
+        this.paymentService = paymentService;
+        this.tripSeatInfoService = tripSeatInfoService;
+        this.ticketStatusService = ticketStatusService;
+        this.ticketDTOMapper = ticketDTOMapper;
+        this.configurationService = configurationService;
     }
 
-
-    public TicketDTO toDTO(Ticket ticket) {
-        return ticketDTOMapper.apply(ticket);
-    }
 
     public List<TicketDTO> handleCartInfo(List<TicketRequest> payload) {
         return payload.stream().map(data -> {
@@ -89,7 +107,7 @@ public class TicketService {
 
     public TicketDTO handleCancelTicket(Long ticketId) {
         Ticket ticket = cancelTicket(ticketId);
-        return toDTO(ticket);
+        return (TicketDTO) toDTO(ticket);
     }
 
 
@@ -129,7 +147,10 @@ public class TicketService {
         PaymentMethod paymentMethod = paymentMethodService.getById(paymentMethodId);
         User finalUser = user != null ? user : (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         TicketStatus ticketStatus = ticketStatusService.getUnpaidStatus();
+        Integer maxCarryOnLuggage = configurationService.getMaxCarryOnCargoKg();
         cart.forEach(c -> {
+            if (maxCarryOnLuggage.equals(c.getSeatInfo().get("luggage")))
+                throw new IllegalArgumentException(String.format("Khối lượng hành lý mang theo phải ít hơn %d", maxCarryOnLuggage.intValue()));
             Long tripId = c.getTripId();
             Long seatId = c.getSeatInfo().get("id");
 

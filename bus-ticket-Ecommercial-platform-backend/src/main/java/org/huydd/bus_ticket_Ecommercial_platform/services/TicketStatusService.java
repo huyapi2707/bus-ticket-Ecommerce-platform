@@ -8,6 +8,8 @@ import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketStatusRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Getter
@@ -32,5 +34,11 @@ public class TicketStatusService {
     }
     public TicketStatus getCanceledStatus() {
         return ticketStatusRepository.findByName(CANCELED).get();
+    }
+
+    public TicketStatus getStatusByName(String name) {
+        Optional<TicketStatus> optionalTicketStatus = ticketStatusRepository.findByName(name);
+        if (optionalTicketStatus.isEmpty()) throw new IllegalArgumentException("No ticket status name found");
+        return optionalTicketStatus.get();
     }
 }

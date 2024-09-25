@@ -75,8 +75,8 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
               type="search"
               value={kw}
               onChange={(e) => handleChangeKw(e.target.value)}
-              placeholder="Search"
-              aria-label="Search"
+              placeholder="Tìm kiếm tên"
+              aria-label="Tìm kiếm tên"
             />
           </form>
         </div>

@@ -24,6 +24,6 @@ public class Configuration {
     private Integer jwtExpirationDuration;
     @Basic
     @Column(name = "max_carryOn_cargo_kg", nullable = false)
-    private Integer maxCarryOnCargoKg;
+    private Integer maxCarryOnLuggageKg;
 
 }

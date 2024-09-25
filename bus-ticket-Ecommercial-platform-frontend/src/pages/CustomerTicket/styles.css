@@ -18,3 +18,10 @@
 .ticket-table-body td {
   vertical-align: middle;
 }
+
+.ticket-status {
+  width: 1.5rem;
+  height: 0.4rem;
+  border-radius: 30%;
+  margin: auto;
+}

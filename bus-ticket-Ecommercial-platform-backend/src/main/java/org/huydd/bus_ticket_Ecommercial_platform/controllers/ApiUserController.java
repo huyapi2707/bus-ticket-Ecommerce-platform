@@ -1,8 +1,10 @@
 package org.huydd.bus_ticket_Ecommercial_platform.controllers;
 
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
+import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.services.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -34,7 +38,7 @@ public class ApiUserController {
     }
 
     @GetMapping(path = "/{id}/tickets")
-    public ResponseEntity<List<TicketDTO>> getTickets(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getTickets(id));
+    public ResponseEntity<PageableResponse> getTickets(@PathVariable Long id, @RequestParam Map<String, Object> params) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        return ResponseEntity.ok(userService.getTickets(id, params));
     }
 }

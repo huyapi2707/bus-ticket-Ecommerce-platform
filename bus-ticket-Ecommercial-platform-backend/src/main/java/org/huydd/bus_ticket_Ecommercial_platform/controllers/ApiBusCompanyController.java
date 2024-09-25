@@ -22,7 +22,7 @@ public class ApiBusCompanyController {
 
     @GetMapping("/")
     public ResponseEntity<Object> list(@RequestParam Map<String, Object> params) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return ResponseEntity.ok(busCompanyService.getAllAndFilter(params, BusCompanySpecification.class));
+        return ResponseEntity.ok(busCompanyService.getAllAndFilter(params, BusCompanySpecification.class, 15));
     }
 
     @GetMapping("/{id}")

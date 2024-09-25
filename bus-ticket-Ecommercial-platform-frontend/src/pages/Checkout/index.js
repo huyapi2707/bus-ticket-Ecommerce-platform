@@ -16,6 +16,7 @@ const Checkout = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(0);
   const [tickets, setTickets] = useState([]);
+
   const fetchPaymentMethod = async () => {
     try {
       setLoading('flex');
@@ -34,7 +35,7 @@ const Checkout = () => {
     try {
       setLoading('flex');
       const response = await apis.post(
-        endpoints['tickets']['cart'],
+        endpoints['ticket']['cart'],
         cart['data'],
       );
       setTickets(response['data']);
@@ -58,7 +59,7 @@ const Checkout = () => {
       setLoading('flex');
 
       const response = await authenticatedApis().post(
-        endpoints['tickets'].create(selectedPaymentMethod),
+        endpoints['ticket'].create(selectedPaymentMethod),
         cart['data'],
       );
 
@@ -75,7 +76,7 @@ const Checkout = () => {
           theme: 'colored',
         });
       } else {
-        window.location.replace(paymentUrl);
+        console.log(paymentUrl);
       }
     } catch (error) {
       toast.error('Đã xảy ra lỗi khi xử lý đơn hàng của bạn', {

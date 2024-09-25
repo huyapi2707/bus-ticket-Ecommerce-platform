@@ -15,4 +15,9 @@ public class ConfigurationService {
         Configuration configuration = configurationRepository.findFirstByOrderByIdAsc();
         return  configuration.getJwtExpirationDuration();
     }
+
+    public Integer getMaxCarryOnCargoKg() {
+        Configuration configuration = configurationRepository.findFirstByOrderByIdAsc();
+        return configuration.getMaxCarryOnLuggageKg();
+    }
 }

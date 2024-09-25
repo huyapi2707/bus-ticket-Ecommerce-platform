@@ -9,8 +9,11 @@ import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.UserDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
+import org.huydd.bus_ticket_Ecommercial_platform.pojo.TicketStatus;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.UserRepository;
+import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
+import org.huydd.bus_ticket_Ecommercial_platform.specifications.TicketSpecification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,6 +40,8 @@ public class UserService implements UserDetailsService {
     private final CloudinaryService cloudinaryService;
 
     private final TicketService ticketService;
+
+    private final TicketStatusService ticketStatusService;
 
 
     private boolean checkPermission(User user) {
@@ -108,11 +115,16 @@ public class UserService implements UserDetailsService {
         return userRepository.getUserByUsername(username).orElse(null);
     }
 
-    public List<TicketDTO> getTickets(Long userId) {
+    public PageableResponse getTickets(Long userId, Map<String, Object> params) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         if (!checkPermission(userId)) throw  new NoPermissionException("You don't have permission to access this content");
         User user = userRepository.findById(userId).get();
-        List<Ticket> tickets = (List<Ticket>) user.getTickets();
-        return tickets.stream().map(ticketService::toDTO).collect(Collectors.toList());
+        params.put("customer", user);
+        if (params.containsKey("status")) {
+            TicketStatus status = ticketStatusService.getStatusByName(params.get("status").toString());
+            params.put("status", status);
+
+        }
+        return (PageableResponse) ticketService.getAllAndFilter(params, TicketSpecification.class, 10);
     }
 
     private boolean checkPermission(Long userId) {

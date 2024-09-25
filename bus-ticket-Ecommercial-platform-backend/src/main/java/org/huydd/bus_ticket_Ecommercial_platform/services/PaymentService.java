@@ -3,6 +3,8 @@ package org.huydd.bus_ticket_Ecommercial_platform.services;
 import lombok.RequiredArgsConstructor;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.OnlinePaymentResult;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
+import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketRepository;
+import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketStatusRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.OnlinePaymentResponse;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -27,7 +29,7 @@ public class PaymentService {
 
     private final Environment environment;
 
-    private final TicketService ticketService;
+    private final TicketRepository ticketRepository;
 
     public String createVnPayPaymentUrl(List<Ticket> tickets, String ip) throws UnsupportedEncodingException {
         Map<String, String> params = new HashMap<>();
@@ -51,7 +53,7 @@ public class PaymentService {
             amount += ticket.getSeatPrice();
             ticket.setOnlinePaymentResult(paymentResults);
         }
-        ticketService.saveAll(tickets);
+        ticketRepository.saveAll(tickets);
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnpCreateDate = formatter.format(calendar.getTime());
@@ -91,8 +93,6 @@ public class PaymentService {
 
 
         return vnpPaymentUrl + "?" + queryUrl;
-
-
     }
 
 
@@ -141,7 +141,8 @@ public class PaymentService {
             for (Ticket ticket : tickets) {
                 ticket.setPaidAt(timestamp);
             }
-            ticketService.saveAll(tickets);
+            ticketRepository
+                    .saveAll(tickets);
             onlinePaymentResultService.update(paymentResult);
             return OnlinePaymentResponse.builder()
                     .isSuccess(true)
