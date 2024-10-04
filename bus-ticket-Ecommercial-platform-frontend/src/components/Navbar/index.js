@@ -100,9 +100,9 @@ const Navbar = () => {
                       Vé xe đã mua
                     </Link>
                   </li>
-                  {user.role === 'COMPANY_MANAGER' && (
+                  {user['role'] === 'COMPANY_MANAGER' && (
                     <li>
-                      <Link className="nav-link" to="/manage-company">
+                      <Link className="nav-link" to="/manage_company">
                         Quản lý công ty
                       </Link>
                     </li>

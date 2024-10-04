@@ -2,12 +2,15 @@ package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 import com.mongodb.client.model.geojson.LineString;
 import lombok.RequiredArgsConstructor;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.BusCompanyDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.AccessDeniedException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
+import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoContentException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.UserDTOMapper;
+import org.huydd.bus_ticket_Ecommercial_platform.pojo.BusCompany;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TicketStatus;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
@@ -38,6 +41,8 @@ public class UserService implements UserDetailsService {
     private final UserDTOMapper userDTOMapper;
 
     private final CloudinaryService cloudinaryService;
+
+    private final BusCompanyService busCompanyService;
 
     private final TicketService ticketService;
 
@@ -111,13 +116,25 @@ public class UserService implements UserDetailsService {
         return toDTO(user);
     }
 
+    public BusCompanyDTO getManagedCompany(Long userId){
+        Optional<User> optionalUser =  userRepository.findById(userId);
+        if (optionalUser.isEmpty()) throw new IdNotFoundException("User id is not found");
+        User user = optionalUser.get();
+        if (!checkPermission(user)) throw new NoPermissionException("Dont don't have permission to access this content");
+        BusCompany company = user.getManaged();
+        if (company != null && company.getIsActive() && company.getIsVerified()) {
+            return (BusCompanyDTO) busCompanyService.toDTO(company);
+        }
+        else throw new NoContentException("No bus company found");
+    }
+
     public User getUserByUsername(String username) {
         return userRepository.getUserByUsername(username).orElse(null);
     }
 
     public PageableResponse getTickets(Long userId, Map<String, Object> params) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        if (!checkPermission(userId)) throw  new NoPermissionException("You don't have permission to access this content");
         User user = userRepository.findById(userId).get();
+        if (!checkPermission((user))) throw  new NoPermissionException("You don't have permission to access this content");
         params.put("customer", user);
         if (params.containsKey("status")) {
             TicketStatus status = ticketStatusService.getStatusByName(params.get("status").toString());
@@ -127,14 +144,6 @@ public class UserService implements UserDetailsService {
         return (PageableResponse) ticketService.getAllAndFilter(params, TicketSpecification.class, 10);
     }
 
-    private boolean checkPermission(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) throw  new IdNotFoundException("No user id found");
-        User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userOptional.get().getId().equals(authenticatedUser.getId())) {
-            return true;
-        }
-        return false;
-    }
+
 
 }

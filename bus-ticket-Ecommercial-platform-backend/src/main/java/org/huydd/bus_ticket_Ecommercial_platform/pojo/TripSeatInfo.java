@@ -10,13 +10,14 @@ import org.huydd.bus_ticket_Ecommercial_platform.dtos.SeatDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Document("tripSeatInfo")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TripSeatInfo {
+public class TripSeatInfo implements Serializable {
 
     @Id
     private ObjectId _id;

@@ -4,12 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Station;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 @Builder
 @Data
-public class RouteDTO {
+public class RouteDTO implements Serializable {
     private Long id;
     private String name;
     private BusCompanyDTO company;

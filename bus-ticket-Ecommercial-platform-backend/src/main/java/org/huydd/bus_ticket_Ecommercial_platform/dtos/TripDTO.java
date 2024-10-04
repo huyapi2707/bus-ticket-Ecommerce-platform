@@ -7,12 +7,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Car;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 @Data
 @Builder
-public class TripDTO {
+public class TripDTO implements Serializable {
     private Long id;
 
     private Timestamp createdAt;

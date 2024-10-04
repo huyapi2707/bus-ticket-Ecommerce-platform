@@ -2,6 +2,7 @@ package org.huydd.bus_ticket_Ecommercial_platform.controllers;
 
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.BusCompanyDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
@@ -40,5 +41,10 @@ public class ApiUserController {
     @GetMapping(path = "/{id}/tickets")
     public ResponseEntity<PageableResponse> getTickets(@PathVariable Long id, @RequestParam Map<String, Object> params) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         return ResponseEntity.ok(userService.getTickets(id, params));
+    }
+
+    @GetMapping(path = "/{id}/managed_company")
+    public ResponseEntity<BusCompanyDTO> getManagedCompany(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getManagedCompany(id));
     }
 }

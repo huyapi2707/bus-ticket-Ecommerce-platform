@@ -1,16 +1,11 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
-import lombok.RequiredArgsConstructor;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.TripDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TripSeatInfo;
-import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
-import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
+
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TripRepository;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service

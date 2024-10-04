@@ -6,7 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -16,7 +19,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Route {
+public class Route implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
@@ -31,7 +34,7 @@ public class Route {
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp createdAt;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private BusCompany company;
     @ManyToOne
@@ -40,7 +43,8 @@ public class Route {
     @ManyToOne
     @JoinColumn(name = "to_station_id", referencedColumnName = "id", nullable = false)
     private Station toStation;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "bus_station_route_pick_up_points",
             joinColumns = @JoinColumn(name = "route_id"),

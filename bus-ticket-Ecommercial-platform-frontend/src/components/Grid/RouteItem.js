@@ -8,12 +8,12 @@ const RouteItem = ({value}) => {
       className="nav-link grid-item border"
     >
       <div className="image-container">
-        <h1>{value['name']}</h1>
+        <h6>{value['name']}</h6>
       </div>
       <div className="mt-3">
         <ul className="nav d-flex flex-column">
           <li className="nav-item">
-            <p className="text-primary">
+            <p className="text-primary route-name">
               {value['fromStation']['name']} - {value['toStation']['name']}
             </p>
           </li>

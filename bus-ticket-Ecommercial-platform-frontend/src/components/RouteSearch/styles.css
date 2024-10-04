@@ -1,0 +1,19 @@
+.location {
+  min-width: 10rem;
+}
+
+.lcation-label {
+  font-size: 0.8rem;
+}
+
+.location-date-picker input {
+  border: none;
+}
+.search-route {
+  margin: 0 auto;
+}
+
+.search-container {
+  max-height: 12.5rem;
+  z-index: 2;
+}

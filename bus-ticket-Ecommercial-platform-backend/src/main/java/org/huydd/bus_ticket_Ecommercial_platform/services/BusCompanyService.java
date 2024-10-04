@@ -9,7 +9,10 @@ import org.huydd.bus_ticket_Ecommercial_platform.pojo.BusCompany;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Route;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.BusCompanyRepository;
 
+import org.huydd.bus_ticket_Ecommercial_platform.specifications.BusCompanySpecification;
 import org.huydd.bus_ticket_Ecommercial_platform.specifications.RouteSpecification;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -36,14 +39,17 @@ public class BusCompanyService extends AbstractPaginateAndFilterService {
         this.busCompanyDTOMapper = busCompanyDTOMapper;
     }
 
+    @Cacheable(value = "companies", keyGenerator = "redisKeyGenerator")
+    public Object handleGetAllAndFilter(Map<String, Object> params,
 
-    public BusCompanyDTO getById(Long id) {
-        var result = busCompanyRepository.findById(id);
-        if (result.isPresent()) {
-            return  busCompanyDTOMapper.apply(result.get());
-        }
-        else throw new IdNotFoundException("Id not found");
+                                        int pageSize) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        return super.getAllAndFilter(params, BusCompanySpecification.class, pageSize);
     }
+    @Cacheable(value = "companies",key = "#id")
+    public BusCompanyDTO getByIdToDto(Long id) {
+        return (BusCompanyDTO) super.toDTO(super.getById(id));
+    }
+
 
     public Object getRoutes(Long id) {
       return routeService.getByBusCompanyId(id);

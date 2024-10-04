@@ -5,9 +5,11 @@ import lombok.Data;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.PaymentMethod;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TicketStatus;
 
+import java.io.Serializable;
+
 @Data
 @Builder
-public class TicketDTO {
+public class TicketDTO implements Serializable {
 
     private Long id;
     private RouteDTO routeInfo;

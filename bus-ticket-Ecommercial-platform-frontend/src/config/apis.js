@@ -10,6 +10,11 @@ const baseEndpoints = {
   trip: '/trips',
   ticket: '/tickets',
   paymentMethod: '/payment_methods',
+  site: '/sites',
+};
+
+const siteEndpoints = {
+  list: `${apiVersion + baseEndpoints['site'] + '/'}`,
 };
 
 const paymentMethodEndpoints = {
@@ -45,10 +50,13 @@ const userEndpoints = {
   self: `${apiVersion + baseEndpoints['user'] + '/self'}`,
   tickets: (id) =>
     `${apiVersion + baseEndpoints['user'] + '/' + id + '/tickets'}`,
+  company: (id) =>
+    `${apiVersion + baseEndpoints['user'] + '/' + id + '/managed_company'}`,
 };
 
 const routeEndpoints = {
   list: `${apiVersion + baseEndpoints['route'] + '/'}`,
+  search: `${apiVersion + baseEndpoints['route'] + '/search'}`,
   retrieve: (id) => `${apiVersion + baseEndpoints['route'] + '/' + id}`,
   trips: (id) => `${apiVersion + baseEndpoints['route'] + '/' + id + '/trips'}`,
 };
@@ -65,6 +73,7 @@ const endpoints = {
   trip: tripEndpoints,
   ticket: ticketEndpoints,
   paymentMethods: paymentMethodEndpoints,
+  site: siteEndpoints,
 };
 
 const apis = axios.create({

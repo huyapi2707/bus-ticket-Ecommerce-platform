@@ -4,6 +4,7 @@ import {
   AuthenticationContext,
   cartReducer,
   CartContext,
+  CompanyContext,
 } from './config/context';
 
 import {useEffect, useReducer, useRef, useState} from 'react';
@@ -24,7 +25,7 @@ function App() {
     key: '',
     data: [],
   });
-
+  const [company, setCompany] = useState(null);
   const fetchUserInfor = async () => {
     try {
       setLoading('flex');
@@ -74,10 +75,12 @@ function App() {
         <AuthenticationContext.Provider value={{user, setUser}}>
           <LoadingContext.Provider value={{loading, setLoading}}>
             <CartContext.Provider value={{cart, cartDispatcher}}>
-              <Loading />
-              <ToastContainer />
-              <CartIcon />
-              <AppRouter />
+              <CompanyContext.Provider value={{company, setCompany}}>
+                <Loading />
+                <ToastContainer />
+                <CartIcon />
+                <AppRouter />
+              </CompanyContext.Provider>
             </CartContext.Provider>
           </LoadingContext.Provider>
         </AuthenticationContext.Provider>

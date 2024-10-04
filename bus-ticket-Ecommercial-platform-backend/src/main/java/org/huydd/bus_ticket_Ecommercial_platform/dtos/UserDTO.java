@@ -5,9 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
+import java.security.SecureRandomParameters;
+
 @Data
 @Builder
-public class UserDTO {
+public class UserDTO implements Serializable {
     private Long id;
     private String username;
     private String email;

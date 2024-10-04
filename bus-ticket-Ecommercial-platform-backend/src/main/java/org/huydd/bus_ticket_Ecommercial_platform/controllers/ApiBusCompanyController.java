@@ -6,6 +6,7 @@ import org.huydd.bus_ticket_Ecommercial_platform.dtos.RouteDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.BusCompany;
 import org.huydd.bus_ticket_Ecommercial_platform.services.BusCompanyService;
 import org.huydd.bus_ticket_Ecommercial_platform.specifications.BusCompanySpecification;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,12 @@ public class ApiBusCompanyController {
 
     @GetMapping("/")
     public ResponseEntity<Object> list(@RequestParam Map<String, Object> params) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return ResponseEntity.ok(busCompanyService.getAllAndFilter(params, BusCompanySpecification.class, 15));
+        return ResponseEntity.ok(busCompanyService.handleGetAllAndFilter(params, 15));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BusCompanyDTO> retrieve(@PathVariable Long id) {
-        return ResponseEntity.ok(busCompanyService.getById(id));
+        return ResponseEntity.ok(busCompanyService.getByIdToDto(id));
     }
 
     @GetMapping("/{id}/routes")

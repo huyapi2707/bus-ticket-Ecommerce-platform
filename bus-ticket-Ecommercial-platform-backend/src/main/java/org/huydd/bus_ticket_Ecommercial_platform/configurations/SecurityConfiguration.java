@@ -43,7 +43,8 @@ public class SecurityConfiguration {
             "/api/v1/payment_methods/**",
             "/api/v1/tickets/cart",
             "/api/v1/trips/**",
-            "/online_payment_result/**"
+            "/online_payment_result/**",
+            "/api/v1/sites/**"
 
     );
     private List<String> companyManagerUrl = List.of();

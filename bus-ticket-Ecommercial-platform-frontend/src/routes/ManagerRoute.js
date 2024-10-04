@@ -4,7 +4,7 @@ import {Navigate, useLocation} from 'react-router-dom';
 import {AuthenticationContext} from '../config/context';
 import LoadingPage from '../components/LoadingPage';
 
-const AuthenticatedRoute = ({children}) => {
+const ManagerRoute = ({children}) => {
   const {user} = useContext(AuthenticationContext);
 
   let {pathname} = useLocation();
@@ -25,4 +25,4 @@ const AuthenticatedRoute = ({children}) => {
   }
 };
 
-export default AuthenticatedRoute;
+export default ManagerRoute;

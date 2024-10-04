@@ -179,7 +179,7 @@ CREATE TABLE `bus_station_role` (
 
 LOCK TABLES `bus_station_role` WRITE;
 /*!40000 ALTER TABLE `bus_station_role` DISABLE KEYS */;
-INSERT INTO `bus_station_role` VALUES (1,'CUSTOMER'),(2,'ADMIN'),(3,'COMPANY_MANGER');
+INSERT INTO `bus_station_role` VALUES (1,'CUSTOMER'),(2,'ADMIN'),(3,'COMPANY_MANAGER');
 /*!40000 ALTER TABLE `bus_station_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -510,4 +510,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-25 23:08:22
+-- Dump completed on 2024-09-29 21:12:22

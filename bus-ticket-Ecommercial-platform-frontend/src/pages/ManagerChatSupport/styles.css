@@ -1,0 +1,87 @@
+.chat-section {
+  height: 80vh;
+}
+
+.c-avatar > img {
+  max-width: 100%;
+  height: 80%;
+}
+
+.conversation {
+  height: 15%;
+  cursor: pointer;
+}
+
+.conversation:hover {
+  background-color: rgba(75, 75, 75, 0.03);
+}
+
+.c-content {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.c-badge {
+  width: 10%;
+  margin: auto 1rem;
+}
+
+.chat-section-header {
+  height: 10vh;
+}
+
+.chat-section-header img {
+  max-width: 100%;
+  height: 80%;
+}
+
+.chat-container {
+  height: 56vh;
+  overflow-y: scroll;
+}
+
+.message {
+  background-color: #5294f7;
+  max-width: 30rem;
+  min-height: 2rem;
+  border-radius: 1rem;
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 0.9rem;
+}
+.timestamp {
+  font-size: 0.7rem;
+}
+
+.opponentMessage {
+  align-items: flex-start;
+}
+
+.opponentMessage > .timestamp {
+  margin-left: 0.3rem;
+}
+
+.senderMessage {
+  align-items: flex-end;
+}
+
+.opponentMessage > .timestamp {
+  margin-right: 0.3rem;
+}
+.chat-input-container {
+  height: 8vh;
+}
+
+.chat-input-container > .input {
+  width: 90%;
+}
+.chat-input-container > .btn-send {
+  width: 8%;
+}
+
+.btn-send > button {
+  width: 100%;
+}

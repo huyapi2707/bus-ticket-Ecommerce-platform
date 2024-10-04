@@ -3,16 +3,19 @@ import {Routes, Route, BrowserRouter} from 'react-router-dom';
 import Grid from '../components/Grid';
 import RouteInfo from '../pages/RouteInfo';
 import AuthenticatedRoute from './AuthenticatedRoute';
+import ManagerRoute from './ManagerRoute';
 import Checkout from '../pages/Checkout';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import {endpoints} from '../config/apis';
 import PaymentResult from '../pages/PaymentResult';
-import ManagerRoute from './ManagerRoute';
+
 import Profile from '../pages/Profile';
 import CompanyInfo from '../pages/CompanyInfo';
 import CustomerTicket from '../pages/CustomerTicket';
+import ManagerChatSupport from '../pages/ManagerChatSupport';
+import ManageCompanyLayout from '../components/ManageCompanyLayout';
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -63,6 +66,20 @@ const AppRouter = () => {
             }
           />
         </Route>
+        <Route
+          path="/manage_company"
+          element={
+            <ManagerRoute>
+              <ManageCompanyLayout />
+            </ManagerRoute>
+          }
+        >
+          <Route
+            path="/manage_company/chat_support"
+            element={<ManagerChatSupport />}
+          />
+        </Route>
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/payment-result" element={<PaymentResult />} />

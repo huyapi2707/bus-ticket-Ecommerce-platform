@@ -8,22 +8,16 @@ import {
 } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import './styles.css';
-import {useEffect, useRef} from 'react';
-import databaseRef from '../../config/firebase';
+import {useEffect, useRef, useState} from 'react';
+import database from '../../config/firebase';
 import moment from 'moment';
-const Chat = ({
-  subtitle,
-  avatar,
-  senderId,
-  receiverId,
-  conversationKey,
-  isCompany,
-}) => {
-  const messageRef = useRef(
-    databaseRef.child(`/chats/${conversationKey}/messages`),
-  );
-  const badgeRef = useRef(null);
-  const receiverBadgeRef = useRef(null);
+const Chat = ({senderId, receiverId, conversationKey, isCompany}) => {
+  const messageRef = useRef(database.ref(`chats/${conversationKey}/messages`));
+
+  const infoRef = useRef(null);
+  const receiverUnreadRef = useRef(null);
+  const [opponentAvatar, setOpponentAvatar] = useState('');
+  const [opponentName, setOpponentName] = useState('');
 
   const handleSendMessage = (newMessage) => {
     messageRef.current.push({
@@ -32,13 +26,12 @@ const Chat = ({
       timestamp: new Date().getTime(),
     });
 
-    badgeRef.current.set(0);
+    infoRef.current.child('unread').set(0);
 
-    receiverBadgeRef.current.once('value', (snapshot) => {
+    receiverUnreadRef.current.once('value', (snapshot) => {
       const data = snapshot.val();
-      receiverBadgeRef.current.set(data + 1);
+      receiverUnreadRef.current.set(data + 1);
     });
-
     renderCustomComponent(SendTime, {
       timestamp: new Date().getTime(),
       isSender: true,
@@ -49,6 +42,7 @@ const Chat = ({
     messageRef.current.once('value', (snapshot) => {
       snapshot.forEach((child) => {
         const data = child.val();
+        console.log(data, receiverId);
         if (data['senderId'] === receiverId) {
           addResponseMessage(data['message']);
           renderCustomComponent(SendTime, {
@@ -75,7 +69,6 @@ const Chat = ({
       .limitToLast(1)
       .on('child_added', (snapshot) => {
         const data = snapshot.val();
-        console.log(data);
         if (data['senderId'] === receiverId) {
           addResponseMessage(data['message']);
           renderCustomComponent(SendTime, {
@@ -88,30 +81,36 @@ const Chat = ({
     // listen to badge
 
     if (isCompany) {
-      badgeRef.current = databaseRef
-        .child('/companies_keys/')
+      infoRef.current = database
+        .ref('companies_keys/')
         .child(senderId)
-        .child(conversationKey)
-        .child('unread');
-      receiverBadgeRef.current = databaseRef
-        .child('/users_keys/')
+        .child(conversationKey);
+
+      receiverUnreadRef.current = database
+        .ref('users_keys/')
         .child(receiverId)
-        .child(conversationKey)
-        .child('unread');
+        .child(conversationKey);
     } else {
-      badgeRef.current = databaseRef
-        .child('/users_keys/')
+      infoRef.current = database
+        .ref('users_keys/')
         .child(senderId)
-        .child(conversationKey)
-        .child('unread');
-      receiverBadgeRef.current = databaseRef
-        .child('/companies_keys/')
+        .child(conversationKey);
+      receiverUnreadRef.current = database
+        .ref('companies_keys/')
         .child(receiverId)
         .child(conversationKey)
         .child('unread');
     }
 
-    badgeRef.current.on('value', (snapshot) => {
+    infoRef.current.once('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setOpponentAvatar(data['avatar']);
+        setOpponentName(data['name']);
+      }
+    });
+
+    infoRef.current.child('unread').on('value', (snapshot) => {
       const data = snapshot.val();
 
       if (data !== 0) {
@@ -124,7 +123,7 @@ const Chat = ({
 
     return () => {
       deleteMessages();
-      badgeRef.current.off('value');
+      infoRef.current.child('unread').off('value');
       messageRef.current.off('child_added');
     };
   }, []);
@@ -134,9 +133,9 @@ const Chat = ({
       showCloseButton={true}
       chatId={conversationKey}
       emojis={true}
-      titleAvatar={avatar}
+      titleAvatar={opponentAvatar}
       title="Tư vấn trực tuyến"
-      subtitle={subtitle}
+      subtitle={opponentName}
       handleNewUserMessage={handleSendMessage}
       senderPlaceHolder={'Nhập tin nhắn của bạn'}
       showTimeStamp={false}

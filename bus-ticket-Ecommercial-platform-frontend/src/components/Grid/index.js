@@ -4,6 +4,7 @@ import {apis, endpoints} from '../../config/apis';
 import {LoadingContext} from '../../config/context';
 import CompanyItem from './CompanyItem';
 import RouteItem from './RouteItem';
+import RouteSearch from '../RouteSearch';
 const Grid = ({title, breadcrumb, dataEndpoint}) => {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
@@ -11,6 +12,8 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
   const [pageTotal, setPageTotal] = useState(0);
   const [kw, setKw] = useState('');
   const isKwChanged = useRef(false);
+  const isSearchKwChanged = useRef(false);
+  const [routeSearchKw, setRouteSearchKw] = useState({});
   const handleChangeKw = (value) => {
     setKw(value);
     isKwChanged.current = true;
@@ -18,10 +21,32 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
   const fetchData = async () => {
     try {
       setLoading('flex');
+      let requestUrl = null;
 
-      const response = await apis.get(
-        `${dataEndpoint}?page=${page}&name=${kw}`,
-      );
+      if (
+        title === 'Tuyến xe' &&
+        routeSearchKw != {} &&
+        routeSearchKw['data'] &&
+        Object.keys(routeSearchKw['data']).length > 0
+      ) {
+        requestUrl = `${endpoints['route']['search']}?page=${page}`;
+        Object.keys(routeSearchKw['data']).map((key) => {
+          if (routeSearchKw['data'][key] && routeSearchKw['data'][key] > 0) {
+            if (key === 'startDate') {
+              requestUrl += `&${key}=${routeSearchKw['data'][key].getTime()}`;
+            } else {
+              requestUrl += `&${key}=${routeSearchKw['data'][key]}`;
+            }
+          }
+        });
+      } else {
+        requestUrl = `${dataEndpoint}?page=${page}`;
+        if (kw !== '') {
+          requestUrl += `&name=${kw}`;
+        }
+      }
+
+      const response = await apis.get(requestUrl);
 
       if (response) {
         setData(response['data']['results']);
@@ -37,7 +62,10 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
   };
 
   useEffect(() => {
-    if (isKwChanged.current && page === 1) {
+    if (isSearchKwChanged.current) {
+      setKw('');
+      setPage(1);
+    } else if (isKwChanged.current && page === 1) {
       isKwChanged.current = false;
       fetchData();
     } else if (isKwChanged.current && page !== 1) {
@@ -46,7 +74,7 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
     } else {
       fetchData();
     }
-  }, [page, kw]);
+  }, [page, kw, routeSearchKw['key']]);
 
   return (
     <div className="container-fluid px-5 mt-5 border-bottom">
@@ -80,6 +108,9 @@ const Grid = ({title, breadcrumb, dataEndpoint}) => {
             />
           </form>
         </div>
+        {title === 'Tuyến xe' && (
+          <RouteSearch setRouteSearchKw={setRouteSearchKw} />
+        )}
       </nav>
       <div className="row ">
         <div className="grid-data">

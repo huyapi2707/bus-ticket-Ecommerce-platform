@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 
 @Entity
 @Table(name = "bus_station_paymentmethod", schema = "busdb", catalog = "")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentMethod {
+public class PaymentMethod implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)

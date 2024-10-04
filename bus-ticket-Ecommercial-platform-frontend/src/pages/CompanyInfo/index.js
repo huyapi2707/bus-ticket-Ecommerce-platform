@@ -5,7 +5,7 @@ import {AuthenticationContext, LoadingContext} from '../../config/context';
 import {apis, endpoints} from '../../config/apis';
 import moment from 'moment';
 import Chat from '../../components/Chat';
-import databaseRef from '../../config/firebase';
+import database from '../../config/firebase';
 const CompanyInfo = () => {
   let {pathname} = useLocation();
   const {user} = useContext(AuthenticationContext);
@@ -41,8 +41,8 @@ const CompanyInfo = () => {
   };
   const startConversation = async () => {
     let key = null;
-    await databaseRef
-      .child('/users_keys/' + user['id'])
+    await database
+      .ref('users_keys/' + user['id'])
       .once('value')
       .then((snapshot) => {
         snapshot.forEach((child) => {
@@ -51,18 +51,21 @@ const CompanyInfo = () => {
             key = child.key;
           }
         });
+
         if (!key) {
-          key = databaseRef.child('/users_keys/' + user['id']).push().key;
-          databaseRef.child('/users_keys/' + user['id'] + `/${key}`).set({
+          key = database.ref('users_keys/' + user['id']).push().key;
+          database.ref('users_keys/' + user['id'] + `/${key}`).set({
+            avatar: company['avatar'],
+            name: company['name'],
             opponentId: company['id'],
             unread: 0,
           });
-          databaseRef
-            .child('/companies_keys/' + company['id'] + `/${key}`)
-            .set({
-              opponentId: user['id'],
-              unread: 0,
-            });
+          database.ref('companies_keys/' + company['id'] + `/${key}`).set({
+            name: user['firstname'] + ' ' + user['lastname'],
+            avatar: user['avatar'],
+            opponentId: user['id'],
+            unread: 0,
+          });
         }
         conversationKey.current = key;
       });
@@ -155,8 +158,6 @@ const CompanyInfo = () => {
               conversationKey={conversationKey.current}
               senderId={user['id']}
               receiverId={company['id']}
-              avatar={company['avatar']}
-              subtitle={`Trò chuyện với nhân viên của ${company['name']}`}
               isCompany={false}
             />
           )}
