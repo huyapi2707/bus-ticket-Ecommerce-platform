@@ -78,7 +78,6 @@ function App() {
               <CompanyContext.Provider value={{company, setCompany}}>
                 <Loading />
                 <ToastContainer />
-                <CartIcon />
                 <AppRouter />
               </CompanyContext.Provider>
             </CartContext.Provider>

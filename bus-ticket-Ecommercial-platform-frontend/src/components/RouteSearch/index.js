@@ -58,7 +58,7 @@ const RouteSearch = ({setRouteSearchKw}) => {
               <select
                 value={searchRouteData['fromStation']}
                 onFocus={(event) => {
-                  event.target.size = 7;
+                  event.target.size = 5;
                 }}
                 onBlur={(event) => {
                   event.target.size = 1;

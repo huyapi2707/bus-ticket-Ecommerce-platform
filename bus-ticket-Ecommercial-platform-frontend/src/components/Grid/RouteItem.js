@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-
+import * as utils from '../../config/utils';
 const RouteItem = ({value}) => {
   return (
     <Link
@@ -20,7 +20,9 @@ const RouteItem = ({value}) => {
           <li className="nav-item">Công ty: {value['company']['name']}</li>
           <li className="nav-item">
             Giá vé:{' '}
-            <span className="text-danger fw-bold">{value['seatPrice']}</span>
+            <span className="text-danger fw-bold">
+              {utils.formatToVND(value['seatPrice'])}
+            </span>
           </li>
         </ul>
       </div>
