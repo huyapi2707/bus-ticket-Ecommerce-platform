@@ -210,7 +210,7 @@ const RouteInfo = () => {
             </div>
             <div className="mt-5 d-flex align-items-center">
               <button onClick={addToCart} className="btn btn-primary">
-                Thêm vào giỏ hàng
+                Thêm vào giỏ vé
               </button>
             </div>
             <div className="mt-5 ">
