@@ -19,4 +19,6 @@ public class TicketDTO implements Serializable {
     private TicketStatus status;
     private Double seatPrice;
     private PaymentMethod paymentMethod;
+
+    private String pickUpAddress;
 }

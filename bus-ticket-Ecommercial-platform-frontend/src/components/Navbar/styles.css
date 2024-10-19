@@ -52,4 +52,5 @@
 .ul-child-company {
   grid-template-columns: 10rem 10rem 10rem 10rem;
   left: -100%;
+  z-index: 3;
 }

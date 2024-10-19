@@ -1,0 +1,26 @@
+.ticket-details {
+  position: absolute;
+  display: none;
+  z-index: 4;
+  text-align: start;
+}
+
+.customer-ticket:hover .ticket-details {
+  display: block;
+  animation: details-open 0.3s ease-out forwards;
+}
+
+.ticket-details li:hover {
+  background-color: #cfe2ff;
+}
+
+@keyframes details-open {
+  0% {
+    left: 38%;
+    opacity: 0;
+  }
+  100% {
+    left: 40%;
+    opacity: 100%;
+  }
+}

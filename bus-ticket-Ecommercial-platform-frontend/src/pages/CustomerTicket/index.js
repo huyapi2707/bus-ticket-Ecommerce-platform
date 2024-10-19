@@ -6,6 +6,7 @@ import {authenticatedApis, endpoints} from '../../config/apis';
 import moment from 'moment';
 import * as utils from '../../config/utils';
 import {toast} from 'react-toastify';
+import TicketDetails from '../../components/TicketDetails/TicketDetails';
 const statusInfo = {
   ALL: {
     title: 'Tất cả',
@@ -163,31 +164,25 @@ const CustomerTicket = () => {
             <tr>
               <th>Mã vé</th>
               <th>Mã chuyến</th>
-              <th>Công ty phụ trách</th>
-              <th>Giá vé</th>
               <th>Bến khởi hành</th>
               <th>Bến đến</th>
-              <th>Mã ghế</th>
               <th>Khởi hành lúc</th>
-              <th>Khối lượng hành lý</th>
-              <th>Phương thức thanh toán</th>
+              <th>Mã ghế</th>
+              <th>Giá vé</th>
               <th>Trạng thái</th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody className="ticket-table-body">
             {tickets.map((ticket, index) => (
-              <tr key={ticket['id']}>
+              <tr className="customer-ticket" key={ticket['id']}>
                 <td>{ticket['id']}</td>
                 <td>{ticket['routeInfo']['name']}</td>
-                <td>{ticket['routeInfo']['company']['name']}</td>
-                <td>{utils.formatToVND(ticket['seatPrice'])}</td>
                 <td>{ticket['routeInfo']['fromStation']['name']}</td>
                 <td>{ticket['routeInfo']['toStation']['name']}</td>
-                <td>{ticket['seatInfo']['code']}</td>
                 <td>{moment(ticket['tripInfo']['departAt']).format('LLL')}</td>
-                <td>{ticket['luggage']}</td>
-                <td>{ticket['paymentMethod']['name']}</td>
+                <td>{ticket['seatInfo']['code']}</td>
+                <td>{utils.formatToVND(ticket['seatPrice'])}</td>
                 <td>
                   <div
                     className="ticket-status"
@@ -199,6 +194,7 @@ const CustomerTicket = () => {
                   ></div>
                 </td>
                 <td>{renderActionBtn(ticket, index)}</td>
+                <TicketDetails ticket={ticket} />
               </tr>
             ))}
           </tbody>

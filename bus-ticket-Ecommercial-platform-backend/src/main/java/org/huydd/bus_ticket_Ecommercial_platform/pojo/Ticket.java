@@ -37,8 +37,11 @@ public class Ticket implements Serializable {
     @Column(name = "paid_at")
     private Timestamp paidAt;
 
-    @Column(name = "carry_luggage_kg")
+    @Column(name = "carry_on_luggage_kg")
     private Double carryOnLuggageKg;
+
+    @Column(name = "pick_up_address")
+    private String pickUpAddress;
 
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Collection<Review> reviews;

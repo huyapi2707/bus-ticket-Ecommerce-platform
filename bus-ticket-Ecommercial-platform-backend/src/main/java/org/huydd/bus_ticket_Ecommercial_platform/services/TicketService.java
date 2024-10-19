@@ -85,7 +85,9 @@ public class TicketService extends AbstractPaginateAndFilterService {
             return TicketDTO.builder()
                     .tripInfo(thisTrip)
                     .routeInfo(thisRoute)
+                    .pickUpAddress(data.getPickUpPointAddress())
                     .seatInfo(thisSeat)
+                    .seatPrice(thisRoute.getSeatPrice())
                     .luggage(Double.parseDouble(data.getSeatInfo().get("luggage").toString()))
                     .build();
         }).collect(Collectors.toList());
@@ -158,6 +160,7 @@ public class TicketService extends AbstractPaginateAndFilterService {
 
             Trip thisTrip = (Trip) tripService.getById(tripId);
             Ticket thisTicket = Ticket.builder()
+                    .pickUpAddress(c.getPickUpPointAddress())
                     .trip(thisTrip)
                     .customer(finalUser)
                     .seatCode(thisSeat.getCode())

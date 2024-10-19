@@ -8,4 +8,5 @@ import java.util.Map;
 public class TicketRequest {
     private Long tripId;
     private Map<String, Long> seatInfo;
+    private String pickUpPointAddress;
 }

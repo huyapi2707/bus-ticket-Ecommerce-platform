@@ -21,6 +21,10 @@ public class Station implements Serializable {
     @Basic
     @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @Basic
     @Column(name = "map_location", nullable = false, length = -1)
     private String mapLocation;

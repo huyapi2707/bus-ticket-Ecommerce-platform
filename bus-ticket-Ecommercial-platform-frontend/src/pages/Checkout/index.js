@@ -9,6 +9,7 @@ import {
 import {apis, authenticatedApis, endpoints} from '../../config/apis';
 import * as ultils from '../../config/utils';
 import {toast} from 'react-toastify';
+import TicketDetails from '../../components/TicketDetails/TicketDetails';
 const Checkout = () => {
   const {user} = useContext(AuthenticationContext);
   const {setLoading} = useContext(LoadingContext);
@@ -188,12 +189,13 @@ const Checkout = () => {
         </div>
         <div className="col-md-7">
           <div className="shadow-sm p-3 mb-5 bg-body rounded">
-            <h4>Đơn hàng</h4>
+            <h4 className="fw-bold">Đơn hàng</h4>
             <table className="table">
               <thead>
                 <tr>
-                  <th>Công ty & Mã chuyến</th>
+                  <th>Mã chuyến</th>
                   <th>Tuyến</th>
+                  <th>Điểm đón</th>
                   <th>Khởi hành lúc</th>
                   <th>Ghế</th>
                   <th>Khối lượng hành lý</th>
@@ -203,28 +205,25 @@ const Checkout = () => {
               <tbody>
                 {tickets.map((ticket, index) => {
                   return (
-                    <tr key={index}>
+                    <tr className="customer-ticket" key={index}>
                       <td>
-                        <p className="fw-bold">
-                          {ticket['routeInfo']['company']['name']}
-                        </p>
                         <p>{ticket['routeInfo']['name']}</p>
                       </td>
                       <td>
                         <p>
-                          {ticket['routeInfo']['fromStation']['name']} -{' '}
+                          {ticket['routeInfo']['fromStation']['name']}
+                          {' đến '}
                           {ticket['routeInfo']['toStation']['name']}
                         </p>
                       </td>
+                      <td>{ticket['pickUpAddress']}</td>
                       <td>
                         {moment(ticket['tripInfo']['departAt']).format('LLL')}
                       </td>
                       <td>{ticket['seatInfo']['code']}</td>
                       <td>{ticket['luggage']}Kg</td>
-                      <td>
-                        {ultils.formatToVND(ticket['routeInfo']['seatPrice'])}
-                      </td>
-                      <td></td>
+                      <td>{ultils.formatToVND(ticket['seatPrice'])}</td>
+                      <TicketDetails ticket={ticket} />
                     </tr>
                   );
                 })}

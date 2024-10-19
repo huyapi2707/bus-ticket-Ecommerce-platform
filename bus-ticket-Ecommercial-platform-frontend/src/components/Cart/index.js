@@ -78,40 +78,42 @@ const Cart = () => {
                     <ul className="list-unstyled">
                       <li>
                         <Link className="nav-link">
-                          Tên chuyến:{' '}
-                          <span className="fw-bold">
-                            {ticket['routeInfo']['name']}
-                          </span>
+                          <span className="fw-bold">Tên chuyến:</span>{' '}
+                          {ticket['routeInfo']['name']}
                         </Link>
                       </li>
                       <li>
                         <Link className="nav-link">
-                          Tên công ty:{' '}
-                          <span className="fw-bold">
-                            {ticket['routeInfo']['company']['name']}
-                          </span>
+                          <span className="fw-bold">Tên công ty:</span>{' '}
+                          {ticket['routeInfo']['company']['name']}
                         </Link>
                       </li>
                       <li>
-                        Chuyến đi:{' '}
-                        {ticket['routeInfo']['fromStation']['address']} đến{' '}
-                        {ticket['routeInfo']['toStation']['address']}
+                        <span className="fw-bold">Bến đi:</span>{' '}
+                        {ticket['routeInfo']['fromStation']['name']}
                       </li>
                       <li>
-                        Khởi hành lúc:{' '}
+                        <span className="fw-bold">Bến đến:</span>{' '}
+                        {ticket['routeInfo']['toStation']['name']}
+                      </li>
+                      <li>
+                        <span className="fw-bold">Điểm đón:</span>{' '}
+                        {ticket['pickUpAddress']}
+                      </li>
+                      <li>
+                        <span className="fw-bold">Khởi hành lúc</span>:{' '}
                         {moment(ticket['tripInfo']['departAt']).format('LLL')}
                       </li>
-                      <li>Mã ghế: {ticket['seatInfo']['code']}</li>
                       <li>
-                        <Link className="nav-link">
-                          Khối lượng hành lý:{' '}
-                          <span className="fw-bold">
-                            {ticket['luggage']} kg
-                          </span>{' '}
-                        </Link>
+                        <span className="fw-bold">Mã ghế:</span>{' '}
+                        {ticket['seatInfo']['code']}
                       </li>
                       <li>
-                        Giá vé:{' '}
+                        <span className="fw-bold">Khối lượng hành lý:</span>{' '}
+                        {ticket['luggage']} kg
+                      </li>
+                      <li>
+                        <span className="fw-bold">Giá vé:</span>{' '}
                         {ultils.formatToVND(ticket['routeInfo']['seatPrice'])}
                       </li>
                     </ul>

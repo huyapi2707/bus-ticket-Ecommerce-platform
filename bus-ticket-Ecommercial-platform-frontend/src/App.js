@@ -66,7 +66,6 @@ function App() {
       localStorage.setItem('cart', JSON.stringify(cart['data']));
     }
   }, [cart['key']]);
-
   return (
     <div className="container-fluid">
       <GoogleOAuthProvider

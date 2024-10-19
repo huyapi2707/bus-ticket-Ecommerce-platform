@@ -19,6 +19,10 @@
   vertical-align: middle;
 }
 
+.customer-ticket {
+  position: relative;
+}
+
 .ticket-status {
   width: 1.5rem;
   height: 0.4rem;

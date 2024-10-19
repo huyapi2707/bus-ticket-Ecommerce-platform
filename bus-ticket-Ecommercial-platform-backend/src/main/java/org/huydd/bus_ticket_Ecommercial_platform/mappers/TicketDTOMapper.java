@@ -30,6 +30,7 @@ public class TicketDTOMapper implements Function<Ticket, TicketDTO> {
                 .build();
         return TicketDTO.builder()
                 .tripInfo(trip)
+                .pickUpAddress(ticket.getPickUpAddress())
                 .paymentMethod(ticket.getPaymentMethod())
                 .seatPrice(ticket.getSeatPrice())
                 .routeInfo(route)

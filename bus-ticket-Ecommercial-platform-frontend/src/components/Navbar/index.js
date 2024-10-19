@@ -60,7 +60,7 @@ const Navbar = () => {
                 })}
               </ul>
             </li>
-            {user && user.role === 'USER' && (
+            {user && user.role === 'CUSTOMER' && (
               <li className="nav-item">
                 <Link
                   to="/create-company"

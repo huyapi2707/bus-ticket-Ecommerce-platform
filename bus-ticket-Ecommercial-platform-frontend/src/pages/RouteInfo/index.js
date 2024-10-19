@@ -17,7 +17,8 @@ const RouteInfo = () => {
   const [trips, setTrips] = useState([]);
   const [tripId, setTripId] = useState(null);
   const [seatDetails, setSeatDetails] = useState([]);
-
+  const [pickUpPoints, setPickUpPoints] = useState([]);
+  const [selectedPickUpPointIdx, setSelectedPickUpPointIdx] = useState(-1);
   const addToCart = () => {
     if (arrSelectedSeats.length === 0) {
       toast.warning('Hãy chọn ghế bạn muốn', {
@@ -31,10 +32,12 @@ const RouteInfo = () => {
       });
       return;
     }
+    const pickUpPointAddress = pickUpPoints[selectedPickUpPointIdx]['address'];
     const payload = arrSelectedSeats.map((seat) => {
       return {
         tripId: tripId,
         seatInfo: seat,
+        pickUpPointAddress: pickUpPointAddress,
       };
     });
 
@@ -104,7 +107,10 @@ const RouteInfo = () => {
       setLoading('flex');
       const response = await apis.get(endpoints.route.retrieve(id));
       const data = response['data'];
-
+      let arrPickUpPoints = [data['fromStation']];
+      arrPickUpPoints = arrPickUpPoints.concat(data['pickUpPoints']);
+      setPickUpPoints(arrPickUpPoints);
+      setSelectedPickUpPointIdx(0);
       setRoute(data);
     } catch (ex) {
       console.error(ex);
@@ -250,7 +256,7 @@ const RouteInfo = () => {
         )}
         <div className="col-md-6 p-3">
           <div>
-            <h5 className="text-center">Các chuyến</h5>
+            <h5 className="text-center">Chọn chuyến đi</h5>
             <div className="mt-4 border-bottom pb-3 d-flex flex-direction-column">
               {trips.map((trip) => {
                 return (
@@ -263,6 +269,7 @@ const RouteInfo = () => {
                       onChange={() => {
                         setTripId(trip['id']);
                       }}
+                      value={trip['id']}
                       checked={trip['id'] === tripId}
                     />
                     <label
@@ -277,6 +284,44 @@ const RouteInfo = () => {
                   </div>
                 );
               })}
+            </div>
+            <div className="border-bottom">
+              <div className="d-flex justify-content-center mt-4">
+                <h5>Chọn điểm đón</h5>
+              </div>
+              <div className="d-flex justify-content-between mt-3">
+                <div>
+                  {pickUpPoints.map((point, index) => {
+                    return (
+                      <div key={index} className="form-check my-2">
+                        <input
+                          value={point['id']}
+                          onChange={() => setSelectedPickUpPointIdx(index)}
+                          checked={selectedPickUpPointIdx === index}
+                          className="form-check-input"
+                          name={`pickUpPoint_${point['id']}`}
+                          type="radio"
+                        ></input>
+                        <label htmlFor={`pickUpPoint_${point['id']}`}>
+                          {point['name']}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div>
+                  {selectedPickUpPointIdx >= 0 && (
+                    <iframe
+                      src={pickUpPoints[selectedPickUpPointIdx]['mapLocation']}
+                      width="300"
+                      height="300"
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="mt-4 d-flex align-items-center flex-column">
               <h5>Ghế</h5>
