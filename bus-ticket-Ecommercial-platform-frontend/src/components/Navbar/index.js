@@ -28,7 +28,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="container mt-2">
+    <nav className="container mt-2 shadow-sm">
       <div className="row">
         <div className="col-md-5 d-flex align-middle">
           <Link

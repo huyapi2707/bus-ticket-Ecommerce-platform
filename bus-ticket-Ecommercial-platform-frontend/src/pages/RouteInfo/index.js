@@ -6,7 +6,7 @@ import {apis, endpoints} from '../../config/apis';
 import {CartContext, LoadingContext} from '../../config/context';
 import moment from 'moment';
 import 'moment/locale/vi';
-import {toast} from 'react-toastify';
+import Alert from 'react-bootstrap/Alert';
 
 const RouteInfo = () => {
   let {id} = useParams();
@@ -19,18 +19,18 @@ const RouteInfo = () => {
   const [seatDetails, setSeatDetails] = useState([]);
   const [pickUpPoints, setPickUpPoints] = useState([]);
   const [selectedPickUpPointIdx, setSelectedPickUpPointIdx] = useState(-1);
+  const [error, setError] = useState({
+    variant: '',
+    show: false,
+    message: ''
+  })
   const addToCart = () => {
     if (arrSelectedSeats.length === 0) {
-      toast.warning('Hãy chọn ghế bạn muốn', {
-        position: 'top-center',
-        autoClose: 4000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      });
-      return;
+      setError({
+        variant: 'warning',
+        show: true,
+        message: 'Hãy chọn ghế bạn muốn'
+      })
     }
     const pickUpPointAddress = pickUpPoints[selectedPickUpPointIdx]['address'];
     const payload = arrSelectedSeats.map((seat) => {
@@ -161,6 +161,10 @@ const RouteInfo = () => {
 
   return (
     <div className="container py-5">
+
+      <Alert show={error['show']} variant={error['variant']} dismissible onClose={() => {setError({show: false})}}>
+        <p>{error['message']}</p>
+      </Alert>
       <div className="row">
         {route && (
           <div className="col-md-6 p-3">

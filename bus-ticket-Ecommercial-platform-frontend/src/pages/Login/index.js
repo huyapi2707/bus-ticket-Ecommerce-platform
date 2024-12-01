@@ -3,12 +3,17 @@ import './styles.css';
 import GoogleButton from 'react-google-button'
 import {LoadingContext, AuthenticationContext} from '../../config/context';
 import {apis, endpoints} from '../../config/apis';
-import {toast} from 'react-toastify';
+import { Alert } from 'react-bootstrap';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import * as validator from '../../config/validator';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState({
+    variant: '',
+    show: false,
+    message: ''
+  })
   const {setLoading} = useContext(LoadingContext);
   const {setUser} = useContext(AuthenticationContext);
   const location = useLocation();
@@ -25,15 +30,11 @@ const Login = () => {
   const callLogin = async () => {
     const validateMsg = validate();
     if (validateMsg) {
-      toast.error(validateMsg, {
-        position: 'top-center',
-        autoClose: 4000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      });
+      setError({
+        variant: 'danger',
+        show: true,
+        message: validateMsg
+      })
       return;
     }
 
@@ -44,18 +45,12 @@ const Login = () => {
           username: username,
           password: password,
         })
-        .catch((error) => {
-          if (error.response.status === 400) {
-            toast.error(error.response.data.errors[0], {
-              position: 'top-center',
-              autoClose: 4000,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: 'colored',
-            });
-          }
+        .catch((errorResponse) => {
+          setError({
+            variant: 'danger',
+            show: true,
+            message: errorResponse['response']['data']
+          })
         });
       const data = response.data;
 
@@ -90,6 +85,9 @@ const Login = () => {
             style={{height: '100%'}}
           >
             <div className="col-md-7">
+              <Alert variant={error['variant']} show={error['show']} onClose={() => setError({show: false})} dismissible>
+                <p>{error['message']}</p>
+              </Alert>
               <div>
                 <h3>Đăng nhập</h3>
                 <p className="text-muted">Chào mừng đến OU BUS</p>

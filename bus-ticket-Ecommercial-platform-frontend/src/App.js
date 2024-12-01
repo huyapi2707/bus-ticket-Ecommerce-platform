@@ -9,8 +9,6 @@ import {
 
 import {useEffect, useReducer, useRef, useState} from 'react';
 import Loading from './components/Loading';
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {authenticatedApis, endpoints} from './config/apis';
 import AppRouter from './routes';
 
@@ -65,13 +63,11 @@ function App() {
   }, [cart['key']]);
   return (
     <div className="container-fluid">
- 
         <AuthenticationContext.Provider value={{user, setUser}}>
           <LoadingContext.Provider value={{loading, setLoading}}>
             <CartContext.Provider value={{cart, cartDispatcher}}>
               <CompanyContext.Provider value={{company, setCompany}}>
                 <Loading />
-                <ToastContainer />
                 <AppRouter />
               </CompanyContext.Provider>
             </CartContext.Provider>

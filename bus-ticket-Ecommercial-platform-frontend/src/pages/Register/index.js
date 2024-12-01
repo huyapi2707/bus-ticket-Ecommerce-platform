@@ -1,12 +1,11 @@
 import './styles.css';
 import '../Login/styles.css';
-// import '../login/styles.css';
 import {useContext, useState} from 'react';
 import * as validator from '../../config/validator';
 import {LoadingContext, AuthenticationContext} from '../../config/context';
 import {apis, endpoints} from '../../config/apis';
-import {toast} from 'react-toastify';
-import {Link, Navigate, useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,6 +15,11 @@ const Register = () => {
   const {setLoading} = useContext(LoadingContext);
   const {setUser} = useContext(AuthenticationContext);
   const navigator = useNavigate();
+  const [error, setError] = useState({
+    variant: '',
+    show: false,
+    message: ''
+  })
   const validate = () => {
     if (password !== rePassword) {
       return 'Mật khẩu không khớp';
@@ -32,15 +36,11 @@ const Register = () => {
     const validateMsg = validate();
 
     if (validateMsg) {
-      toast.error(validateMsg, {
-        position: 'top-center',
-        autoClose: 4000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      });
+      setError({
+        variant: 'danger',
+        show: true,
+        message: validateMsg
+      })
       return;
     } else {
       try {
@@ -52,18 +52,12 @@ const Register = () => {
             email: email,
             role: isCompanyManager ? 'COMPANY_MANAGER' : 'CUSTOMER',
           })
-          .catch((error) => {
-            if (error.response.status === 400) {
-              toast.error(error.response.data, {
-                position: 'top-center',
-                autoClose: 4000,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: 'colored',
-              });
-            }
+          .catch((errorResponse) => {
+            setError({
+              variant: 'danger',
+              show: true,
+              message: errorResponse['response']['data']
+            })
           });
         if (response.status === 201) {
           localStorage.setItem('accessToken', response.data.accessToken);
@@ -86,6 +80,9 @@ const Register = () => {
             style={{height: '100%'}}
           >
             <div className="col-md-7">
+              <Alert variant={error['variant']} show={error['show']} onClose={() => setError({show: false})} dismissible>
+                <p>{error['message']}</p>
+              </Alert>
               <div>
                 <h3>Đăng ký</h3>
                 <p className="text-muted">Chào mừng đến với OU BUS</p>

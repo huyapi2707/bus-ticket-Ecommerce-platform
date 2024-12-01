@@ -8,7 +8,7 @@ import {
 } from '../../config/context';
 import {apis, authenticatedApis, endpoints} from '../../config/apis';
 import * as ultils from '../../config/utils';
-import {toast} from 'react-toastify';
+import { Alert } from 'react-bootstrap';
 import TicketDetails from '../../components/TicketDetails/TicketDetails';
 const Checkout = () => {
   const {user} = useContext(AuthenticationContext);
@@ -17,7 +17,11 @@ const Checkout = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(0);
   const [tickets, setTickets] = useState([]);
-
+  const [error, setError] = useState({
+    variant: '',
+    show: false,
+    message: ''
+  })
   const fetchPaymentMethod = async () => {
     try {
       setLoading('flex');
@@ -62,34 +66,32 @@ const Checkout = () => {
       const response = await authenticatedApis().post(
         endpoints['ticket'].create(selectedPaymentMethod),
         cart['data'],
-      );
+      ).catch(errorResponse => {
+        setError({
+          variant: 'danger',
+          show: true,
+          message: errorResponse['response']['data']
+        })
+      })
 
       const {paymentUrl} = response['data'];
       
       if (paymentUrl === null) {
-        toast.success('Đơn hàng của bạn đã được xử lý thành công', {
-          position: 'top-center',
-          autoClose: 5000,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'colored',
-        });
+        setError({
+          variant: 'success',
+          show: true,
+          message: 'Bạn đã đặt vé thành công.'
+        })
       } else {
         window.location.replace(paymentUrl)
       }
-    } catch (error) {
-      toast.error('Đã xảy ra lỗi khi xử lý đơn hàng của bạn', {
-        position: 'top-center',
-        autoClose: 5000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      });
-      console.error(error);
+    } catch (ex) {
+      setError({
+        variant: 'danger',
+        show: true,
+        message: 'Đã xảy ra lỗi khi đặt vé.'
+      })
+      console.error(ex);
     } finally {
       cartDispatcher({
         type: 'CLEAR_CART',
@@ -102,6 +104,11 @@ const Checkout = () => {
   return (
     <div className="container-fluid mt-5 ">
       <div className="row">
+        <Alert variant={error['variant']} show={error['show']} onClose={() => setError({
+          show: false
+        })} dismissible>
+          <p>{error['message']}</p>
+        </Alert>
         <div className="col-md-5">
           <div className="shadow-sm p-3 mb-5 bg-body rounded">
             <h4>Thông tin của bạn</h4>

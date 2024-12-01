@@ -5,7 +5,7 @@ import {LoadingContext, AuthenticationContext} from '../../config/context';
 import {authenticatedApis, endpoints} from '../../config/apis';
 import moment from 'moment';
 import * as utils from '../../config/utils';
-import {toast} from 'react-toastify';
+import { Alert } from 'react-bootstrap';
 import TicketDetails from '../../components/TicketDetails/TicketDetails';
 const statusInfo = {
   ALL: {
@@ -45,6 +45,11 @@ const CustomerTicket = () => {
   const [page, setPage] = useState(1);
   const [ticketStatus, setTicketStatus] = useState('ALL');
   const isTicketStatusChanged = useRef(false);
+  const [error, setError] = useState({
+    variant: '',
+    show: false,
+    message: ''
+  })
   const renderStatusClassname = (statusName) => {
     return statusInfo[statusName]['color'];
   };
@@ -108,23 +113,30 @@ const CustomerTicket = () => {
 
         const response = await authenticatedApis().delete(
           endpoints['ticket'].delete(id),
-        );
+        ).catch(errorResponse => {
+          setError({
+            variant: 'danger',
+            show: true,
+            message: errorResponse['response']['data']
+          })
+        })
 
         if (response['status'] === 204) {
           const newArrTickets = tickets;
           newArrTickets[index]['status']['name'] = 'CANCELED';
-          toast.success('Bạn đã hủy vé thành công', {
-            position: 'top-center',
-            autoClose: 5000,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-          });
+          setError({
+            variant: 'success',
+            show: true,
+            message: 'Bạn đã hủy vé thành công'
+          })
         }
       } catch (ex) {
-        console.error(ex);
+        setError({
+          variant: 'danger',
+          show: true,
+          message: 'Đã xảy ra lỗi.'
+        })
+        console.log(ex)
       } finally {
         setLoading('none');
       }
@@ -134,6 +146,9 @@ const CustomerTicket = () => {
 
   return (
     <div className="container-fluid mt-5 shadow p-3 mb-5 bg-body rounded ">
+      <Alert variant={error['variant'] } show={error['show']} onClose={() => setError({show: false})} dismissible>
+        <p>{error['message']}</p>
+      </Alert>
       <div className="d-flex justify-content-around mb-3">
         {Object.keys(statusInfo).map((key) => {
           return (

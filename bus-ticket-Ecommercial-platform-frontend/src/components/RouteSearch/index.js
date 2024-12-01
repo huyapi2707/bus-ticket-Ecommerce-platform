@@ -39,7 +39,7 @@ const RouteSearch = ({setRouteSearchKw}) => {
     fetchSites();
   }, []);
   return (
-    <div className="d-flex justify-content-center shadow py-5 rounded search-route px-1 w-75 search-container">
+    <div className="d-flex justify-content-center shadow-sm py-5 rounded search-route px-1 w-75 search-container">
       <div className="d-flex border p-4 justify-content-around">
         <div className="d-flex">
           <div className="mx-3 d-flex align-items-center">

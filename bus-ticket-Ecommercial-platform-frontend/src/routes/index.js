@@ -9,8 +9,6 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Home from '../pages/Home';
 import {endpoints} from '../config/apis';
-import PaymentResult from '../pages/PaymentResult';
-
 import Profile from '../pages/Profile';
 import CompanyInfo from '../pages/CompanyInfo';
 import CustomerTicket from '../pages/CustomerTicket';
