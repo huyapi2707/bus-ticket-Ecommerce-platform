@@ -9,14 +9,11 @@ import {
 
 import {useEffect, useReducer, useRef, useState} from 'react';
 import Loading from './components/Loading';
-
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import {authenticatedApis, endpoints} from './config/apis';
-import CartIcon from './components/CartIcon';
 import AppRouter from './routes';
-import {GoogleOAuthProvider} from '@react-oauth/google';
+
 
 function App() {
   const [loading, setLoading] = useState('none');
@@ -68,9 +65,7 @@ function App() {
   }, [cart['key']]);
   return (
     <div className="container-fluid">
-      <GoogleOAuthProvider
-        clientId={process.env.REACT_APP_GOOGLE_OAUTH2_CLIENT_ID}
-      >
+ 
         <AuthenticationContext.Provider value={{user, setUser}}>
           <LoadingContext.Provider value={{loading, setLoading}}>
             <CartContext.Provider value={{cart, cartDispatcher}}>
@@ -82,7 +77,6 @@ function App() {
             </CartContext.Provider>
           </LoadingContext.Provider>
         </AuthenticationContext.Provider>
-      </GoogleOAuthProvider>
     </div>
   );
 }

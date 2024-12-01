@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
-
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.SearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
 

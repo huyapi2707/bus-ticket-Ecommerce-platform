@@ -6,7 +6,6 @@ import org.huydd.bus_ticket_Ecommercial_platform.pojo.Station;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 
 @Builder
 @Data

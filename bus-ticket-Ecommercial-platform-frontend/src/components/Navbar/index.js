@@ -63,7 +63,7 @@ const Navbar = () => {
             {user && user.role === 'CUSTOMER' && (
               <li className="nav-item">
                 <Link
-                  to="/create-company"
+                  to="/regist_company"
                   className="nav-link fs-5 text-uppercase"
                 >
                   Tham gia

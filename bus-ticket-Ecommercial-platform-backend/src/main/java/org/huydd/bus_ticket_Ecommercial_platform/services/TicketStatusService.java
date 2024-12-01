@@ -1,10 +1,8 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TicketStatus;
-import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketStatusRepository;
 import org.springframework.stereotype.Service;
 

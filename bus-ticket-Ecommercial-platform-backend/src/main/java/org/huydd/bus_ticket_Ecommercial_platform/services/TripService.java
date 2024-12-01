@@ -1,12 +1,12 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.TripDTOMapper;
+import org.huydd.bus_ticket_Ecommercial_platform.pojo.Trip;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TripSeatInfo;
-
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TripRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class TripService extends AbstractPaginateAndFilterService {
@@ -27,10 +27,9 @@ public class TripService extends AbstractPaginateAndFilterService {
 
 
 
-    public Object getByRouteId(Long routeId) {
-        return tripRepository.findAllByRouteIdAndIsActive(routeId, true)
-                .stream().map(tripDTOMapper)
-                .collect(Collectors.toList());
+    public List<Trip> getByRouteId(Long routeId) {
+        return tripRepository.findAllByRouteIdAndIsActive(routeId, true);
+
     }
 
     public TripSeatInfo getTripSeatInfoByTripId(Long tripId, Boolean isActive) {

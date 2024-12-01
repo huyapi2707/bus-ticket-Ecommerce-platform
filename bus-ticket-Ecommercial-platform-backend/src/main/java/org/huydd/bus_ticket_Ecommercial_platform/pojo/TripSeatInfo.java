@@ -1,6 +1,5 @@
 package org.huydd.bus_ticket_Ecommercial_platform.pojo;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.SeatDTO;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
 import java.util.List;

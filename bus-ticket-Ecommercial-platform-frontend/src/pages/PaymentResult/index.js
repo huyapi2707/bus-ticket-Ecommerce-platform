@@ -2,6 +2,8 @@ import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 import './styles.css';
 import {FaCheck} from 'react-icons/fa';
 import {VscError} from 'react-icons/vsc';
+import { useEffect } from 'react';
+import { endpoints } from '../../config/apis';
 const PaymentResult = () => {
   const [searchParams] = useSearchParams();
 
@@ -16,6 +18,11 @@ const PaymentResult = () => {
     content['icon'] = () => <FaCheck size={180} color="#34A853" />;
     content['message'] = 'Your payment is successfull';
   }
+
+  useEffect(() => {
+    const requestUrl = endpoints['payment']
+  }, [])
+
   return (
     <div className="container d-flex flex-column align-items-center my-5">
       <div className="">

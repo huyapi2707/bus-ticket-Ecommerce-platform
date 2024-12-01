@@ -1,9 +1,6 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
-import com.mongodb.client.model.geojson.LineString;
 import lombok.RequiredArgsConstructor;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.BusCompanyDTO;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.AccessDeniedException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
@@ -11,26 +8,22 @@ import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoContentException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.UserDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.BusCompany;
-import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TicketStatus;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.UserRepository;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
+import org.huydd.bus_ticket_Ecommercial_platform.responseModels.PageableResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.specifications.TicketSpecification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service(value = "userDetailsService")
 @RequiredArgsConstructor
@@ -42,7 +35,6 @@ public class UserService implements UserDetailsService {
 
     private final CloudinaryService cloudinaryService;
 
-    private final BusCompanyService busCompanyService;
 
     private final TicketService ticketService;
 
@@ -60,6 +52,9 @@ public class UserService implements UserDetailsService {
         return userRepository.getUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    public Optional<User> getById(Long id) {
+        return userRepository.findById(id);
+    }
 
     public UserDTO toDTO(User user) {
         return userDTOMapper.apply(user);
@@ -116,14 +111,14 @@ public class UserService implements UserDetailsService {
         return toDTO(user);
     }
 
-    public BusCompanyDTO getManagedCompany(Long userId){
+    public BusCompany getManagedCompany(Long userId){
         Optional<User> optionalUser =  userRepository.findById(userId);
         if (optionalUser.isEmpty()) throw new IdNotFoundException("User id is not found");
         User user = optionalUser.get();
         if (!checkPermission(user)) throw new NoPermissionException("Dont don't have permission to access this content");
         BusCompany company = user.getManaged();
         if (company != null && company.getIsActive() && company.getIsVerified()) {
-            return (BusCompanyDTO) busCompanyService.toDTO(company);
+            return company;
         }
         else throw new NoContentException("No bus company found");
     }
@@ -143,7 +138,6 @@ public class UserService implements UserDetailsService {
         }
         return (PageableResponse) ticketService.getAllAndFilter(params, TicketSpecification.class, 10);
     }
-
 
 
 }

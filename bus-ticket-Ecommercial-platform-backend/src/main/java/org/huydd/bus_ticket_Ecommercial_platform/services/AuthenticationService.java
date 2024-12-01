@@ -1,15 +1,13 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 import lombok.RequiredArgsConstructor;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.*;
-
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.UserDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.AccessDeniedException;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Role;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.User;
-import org.huydd.bus_ticket_Ecommercial_platform.requestObjects.AuthenticationRequest;
-import org.huydd.bus_ticket_Ecommercial_platform.requestObjects.LoginWithGoogleRequest;
-import org.huydd.bus_ticket_Ecommercial_platform.requestObjects.RegisterRequest;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.AuthenticationResponse;
+import org.huydd.bus_ticket_Ecommercial_platform.requestModels.AuthenticationRequest;
+import org.huydd.bus_ticket_Ecommercial_platform.requestModels.RegisterRequest;
+import org.huydd.bus_ticket_Ecommercial_platform.responseModels.AuthenticationResponse;
 import org.passay.CharacterData;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -19,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 
 @Service
@@ -26,6 +26,8 @@ import java.sql.Timestamp;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
+
+    private final GoogleOauth2Service googleOauth2Service;
 
     private final UserService userService;
 
@@ -80,39 +82,6 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse loginWithGoogle(LoginWithGoogleRequest payload) {
-        User user = userService.findByEmail(payload.getEmail());
-
-        if (user == null) {
-            Role role = roleService.getRoleByName("CUSTOMER");
-            String password = passwordEncoder.encode(generatePassword());
-            user = User.builder()
-                    .username(payload.getUsername())
-                    .email(payload.getEmail())
-                    .firstName(payload.getFirstName())
-                    .username(payload.getEmail())
-                    .lastName(payload.getLastName())
-                    .avatar(payload.getAvatar())
-                    .role(role)
-                    .isActive(true)
-                    .password(password)
-                    .build();
-            userService.saveUser(user);
-            mailSenderService.sendEmail(
-                    user.getEmail(),
-                    "Đăng ký tài khoản tại Bus Station",
-                    String.format("Mật khẩu tài khoản của bạn là %s", password));
-        }
-        if (!user.getIsActive()) throw new AccessDeniedException("Your account is inactive");
-        String accessToken = jwtService.generateToken(user);
-        UserDTO userDTO = userService.toDTO(user);
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .userDetails(userDTO)
-                .build();
-
-    }
-
     private String generatePassword() {
         PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;
@@ -145,4 +114,56 @@ public class AuthenticationService {
     }
 
 
+    public String createLoginUrl (String authorizationServer, String state) {
+        switch (authorizationServer) {
+            case "google":
+            {
+                return googleOauth2Service.createAuthorizationUrl(state);
+            }
+            default: return null;
+        }
+    }
+
+    public AuthenticationResponse verifyOauth2Request(String authorizationServer, String code) throws GeneralSecurityException, IOException {
+        UserDTO userInfo = null;
+        switch (authorizationServer) {
+            case "google":
+            {
+                userInfo = googleOauth2Service.exchangeAuthorizationCode(code);
+            }
+        }
+        if (userInfo == null) {
+            throw new GeneralSecurityException("Invalid code");
+        }
+
+        User user = userService.findByEmail(userInfo.getEmail());
+
+        if (user == null) {
+            Role role = roleService.getRoleByName("CUSTOMER");
+            String password = passwordEncoder.encode(generatePassword());
+            user = User.builder()
+                    .username(userInfo.getUsername())
+                    .email(userInfo.getEmail())
+                    .firstName(userInfo.getFirstname())
+                    .username(userInfo.getEmail())
+                    .lastName(userInfo.getLastname())
+                    .avatar(userInfo.getAvatar())
+                    .role(role)
+                    .isActive(true)
+                    .password(password)
+                    .build();
+            userService.saveUser(user);
+            mailSenderService.sendEmail(
+                    user.getEmail(),
+                    "Đăng ký tài khoản tại Bus Station",
+                    String.format("Mật khẩu tài khoản của bạn là %s", password));
+        }
+        if (!user.getIsActive()) throw new AccessDeniedException("Your account is inactive");
+        String accessToken = jwtService.generateToken(user);
+        UserDTO userDTO = userService.toDTO(user);
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .userDetails(userDTO)
+                .build();
+    }
 }

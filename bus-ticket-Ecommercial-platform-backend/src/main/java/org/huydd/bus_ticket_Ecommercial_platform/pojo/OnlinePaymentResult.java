@@ -6,12 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.context.annotation.Bean;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,20 +25,38 @@ public class OnlinePaymentResult implements Serializable {
 
     @Column(name = "payment_code")
     private String paymentCode;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
+
     @Column(name = "confirm_at")
     private Timestamp confirmAt;
+
     @Column(name = "bank_code")
     private String bankCode;
+
     @Column(name = "transaction_no")
     private String transactionNo;
+
     @Column(name = "bank_transaction_no")
     private String bankTransactionNo;
+
+    @Column(name = "amount")
+    private Double amount;
+
     @Column(name = "card_type")
     private String cardType;
 
-    @OneToMany(mappedBy = "onlinePaymentResult")
-    private List<Ticket> tickets;
+    @Column(name = "is_success")
+    private Boolean isSuccess;
+
+    @Column(name = "transaction_code")
+    private String transactionCode;
+
+    @Column(name = "message")
+    private String message;
+
+    @ManyToMany(mappedBy = "onlinePaymentResults", fetch = FetchType.LAZY)
+    private List<Ticket> tickets = new ArrayList<Ticket>();
 }

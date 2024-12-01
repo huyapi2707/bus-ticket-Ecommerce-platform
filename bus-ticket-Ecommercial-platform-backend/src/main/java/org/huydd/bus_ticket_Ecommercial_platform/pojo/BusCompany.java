@@ -3,6 +3,7 @@ package org.huydd.bus_ticket_Ecommercial_platform.pojo;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "bus_station_buscompany", schema = "busdb", catalog = "")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BusCompany implements Serializable {

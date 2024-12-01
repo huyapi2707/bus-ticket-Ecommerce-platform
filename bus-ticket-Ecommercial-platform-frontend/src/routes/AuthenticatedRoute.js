@@ -2,7 +2,7 @@ import {useContext} from 'react';
 
 import {Navigate, useLocation} from 'react-router-dom';
 import {AuthenticationContext} from '../config/context';
-import LoadingPage from '../components/LoadingPage';
+import LoadingPage from '../pages/LoadingPage';
 
 const AuthenticatedRoute = ({children}) => {
   const {user} = useContext(AuthenticationContext);

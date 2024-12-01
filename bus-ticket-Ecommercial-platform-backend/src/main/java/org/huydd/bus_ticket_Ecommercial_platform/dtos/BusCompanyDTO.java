@@ -1,7 +1,9 @@
 package org.huydd.bus_ticket_Ecommercial_platform.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -17,4 +19,7 @@ public class BusCompanyDTO implements Serializable {
     private Boolean isVerified;
     private Boolean isActive;
     private Long managerId;
+
+    @JsonIgnore
+    private MultipartFile avatarFile;
 }

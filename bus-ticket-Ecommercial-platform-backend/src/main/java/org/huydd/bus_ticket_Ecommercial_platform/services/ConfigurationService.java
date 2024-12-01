@@ -20,4 +20,9 @@ public class ConfigurationService {
         Configuration configuration = configurationRepository.findFirstByOrderByIdAsc();
         return configuration.getMaxCarryOnLuggageKg();
     }
+
+    public Double getDefaultOperationCost() {
+        Configuration configuration = configurationRepository.findFirstByOrderByIdAsc();
+        return configuration.getDefaultOperationCost();
+    }
 }

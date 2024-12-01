@@ -1,11 +1,9 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.SeatDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.SeatNotAvailableException;
-import org.huydd.bus_ticket_Ecommercial_platform.pojo.Seat;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TripSeatInfo;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TripSeatInfoRepository;
 import org.springframework.stereotype.Service;

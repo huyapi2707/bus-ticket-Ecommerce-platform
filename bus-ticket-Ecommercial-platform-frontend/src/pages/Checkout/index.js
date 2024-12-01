@@ -21,7 +21,7 @@ const Checkout = () => {
   const fetchPaymentMethod = async () => {
     try {
       setLoading('flex');
-      const response = await apis.get(endpoints['paymentMethods']['list']);
+      const response = await apis.get(endpoints['payment']['list']);
       const data = response['data'];
       setPaymentMethods(data);
       setSelectedPaymentMethod(data[0]['id']);
@@ -65,7 +65,7 @@ const Checkout = () => {
       );
 
       const {paymentUrl} = response['data'];
-
+      
       if (paymentUrl === null) {
         toast.success('Đơn hàng của bạn đã được xử lý thành công', {
           position: 'top-center',
@@ -77,7 +77,7 @@ const Checkout = () => {
           theme: 'colored',
         });
       } else {
-        console.log(paymentUrl);
+        window.location.replace(paymentUrl)
       }
     } catch (error) {
       toast.error('Đã xảy ra lỗi khi xử lý đơn hàng của bạn', {

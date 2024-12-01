@@ -18,6 +18,7 @@ const CartIcon = () => {
         {cart['data'].length}
         <span className="visually-hidden">Total tickets</span>
       </span>
+
     </button>
   );
 };

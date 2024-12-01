@@ -6,7 +6,6 @@ import org.huydd.bus_ticket_Ecommercial_platform.dtos.SeatDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.TripDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Ticket;
-import org.huydd.bus_ticket_Ecommercial_platform.pojo.Trip;
 import org.huydd.bus_ticket_Ecommercial_platform.services.RouteService;
 import org.huydd.bus_ticket_Ecommercial_platform.services.TripService;
 import org.springframework.stereotype.Service;

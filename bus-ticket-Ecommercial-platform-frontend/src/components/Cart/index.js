@@ -138,7 +138,14 @@ const Cart = () => {
           </tbody>
         </table>
         <div className="d-flex justify-content-end">
-          <Link to={'/checkout'} className="btn btn-primary mx-1">
+          <Link
+            to={cart['data'].length > 0 ? '/checkout' : null}
+            aria-disabled={'true'}
+            className={[
+              'btn btn-primary mx-1',
+              cart['data'].length > 0 ? null : 'disabled',
+            ].join(' ')}
+          >
             Thanh toán
           </Link>
           <button onClick={handleClearCart} className="btn btn-danger mx-1">

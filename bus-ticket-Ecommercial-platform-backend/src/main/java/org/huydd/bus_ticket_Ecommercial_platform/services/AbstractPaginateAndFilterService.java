@@ -1,19 +1,15 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
 
-
 import lombok.RequiredArgsConstructor;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.dtos.SearchCriteria;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
-import org.huydd.bus_ticket_Ecommercial_platform.utils.RedisKeyGenerator;
-import org.springframework.cache.annotation.Cacheable;
+import org.huydd.bus_ticket_Ecommercial_platform.responseModels.PageableResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

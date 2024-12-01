@@ -1,4 +1,4 @@
-package org.huydd.bus_ticket_Ecommercial_platform.requestObjects;
+package org.huydd.bus_ticket_Ecommercial_platform.requestModels;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,33 +1,21 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
-import lombok.RequiredArgsConstructor;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.*;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.RouteDTO;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.SeatDTO;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
+import org.huydd.bus_ticket_Ecommercial_platform.dtos.TripDTO;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.exceptions.NoPermissionException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.TicketDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.*;
-import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketRepository;
-import org.huydd.bus_ticket_Ecommercial_platform.repositories.TicketStatusRepository;
-import org.huydd.bus_ticket_Ecommercial_platform.requestObjects.TicketRequest;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.CheckoutResponse;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.TicketDTO;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.OnlinePaymentResponse;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.huydd.bus_ticket_Ecommercial_platform.requestModels.TicketRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +27,6 @@ public class TicketService extends AbstractPaginateAndFilterService {
     private final PaymentMethodService paymentMethodService;
     private final TicketRepository ticketRepository;
 
-    private final PaymentService paymentService;
 
     private final TripSeatInfoService tripSeatInfoService;
 
@@ -56,7 +43,6 @@ public class TicketService extends AbstractPaginateAndFilterService {
                          TripService tripService,
                          PaymentMethodService paymentMethodService,
                          TicketRepository ticketRepository,
-                         PaymentService paymentService,
                          TripSeatInfoService tripSeatInfoService,
                          TicketStatusService ticketStatusService,
                          TicketDTOMapper ticketDTOMapper,
@@ -66,7 +52,6 @@ public class TicketService extends AbstractPaginateAndFilterService {
         this.tripService = tripService;
         this.paymentMethodService = paymentMethodService;
         this.ticketRepository = ticketRepository;
-        this.paymentService = paymentService;
         this.tripSeatInfoService = tripSeatInfoService;
         this.ticketStatusService = ticketStatusService;
         this.ticketDTOMapper = ticketDTOMapper;
@@ -94,17 +79,8 @@ public class TicketService extends AbstractPaginateAndFilterService {
     }
 
 
-    public CheckoutResponse checkout(List<TicketRequest> cart, Long paymentMethodId, String ip) throws UnsupportedEncodingException {
-        List<Ticket> tickets = createTickets(cart, paymentMethodId, null);
-        List<TicketDTO> ticketDTOList = tickets.stream().map(ticketDTOMapper::apply).collect(Collectors.toList());
-        String paymentUrl = null;
-        PaymentMethod paymentMethod = paymentMethodService.getById(paymentMethodId);
-        ticketRepository.saveAll(tickets);
-        if (paymentMethod.getName().equals("VNPAY")) {
-            paymentUrl = paymentService.createVnPayPaymentUrl(tickets, ip);
-        }
-        return CheckoutResponse.builder()
-                .tickets(ticketDTOList).paymentUrl(paymentUrl).build();
+    public List<Ticket> checkout(List<TicketRequest> cart, Long paymentMethodId)  {
+        return createTickets(cart, paymentMethodId, null);
     }
 
     public TicketDTO handleCancelTicket(Long ticketId) {
@@ -144,7 +120,7 @@ public class TicketService extends AbstractPaginateAndFilterService {
     }
 
 
-    private List<Ticket> createTickets(List<TicketRequest> cart, Long paymentMethodId, User user) {
+    public List<Ticket> createTickets(List<TicketRequest> cart, Long paymentMethodId, User user) {
         List<Ticket> tickets = new ArrayList<>();
         PaymentMethod paymentMethod = paymentMethodService.getById(paymentMethodId);
         User finalUser = user != null ? user : (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -173,6 +149,32 @@ public class TicketService extends AbstractPaginateAndFilterService {
         });
         ticketRepository.saveAll(tickets);
         return tickets;
+    }
+
+    public void saveAll(List<Ticket> tickets) {
+        ticketRepository.saveAll(tickets);
+    }
+
+    public void addOnlinePaymentResult(Ticket ticket, OnlinePaymentResult onlinePaymentResult) {
+        List<OnlinePaymentResult> results = ticket.getOnlinePaymentResults();
+        if (results == null) {
+            results = new ArrayList<>();
+        }
+        results.add(onlinePaymentResult);
+        ticket.setOnlinePaymentResults(results);
+        ticketRepository.save(ticket);
+    }
+
+    public void addOnlinePaymentResult(List<Ticket> tickets, OnlinePaymentResult onlinePaymentResult) {
+        tickets.forEach(ticket -> {
+            List<OnlinePaymentResult> results = ticket.getOnlinePaymentResults();
+            if (results == null) {
+                results = new ArrayList<>();
+            }
+            results.add(onlinePaymentResult);
+            ticket.setOnlinePaymentResults(results);
+        });
+        ticketRepository.saveAll(tickets);
     }
 
     private boolean checkPermission(Ticket ticket) {

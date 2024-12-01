@@ -1,9 +1,7 @@
 package org.huydd.bus_ticket_Ecommercial_platform.repositories;
 
-import org.bson.types.ObjectId;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.TripSeatInfo;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 

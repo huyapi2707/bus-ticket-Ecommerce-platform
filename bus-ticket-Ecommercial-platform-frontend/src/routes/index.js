@@ -16,6 +16,10 @@ import CompanyInfo from '../pages/CompanyInfo';
 import CustomerTicket from '../pages/CustomerTicket';
 import ManagerChatSupport from '../pages/ManagerChatSupport';
 import ManageCompanyLayout from '../components/ManageCompanyLayout';
+import RegistCompanyRoute from './RegistCompanyRoute';
+import RegistCompany from '../pages/RegistCompany';
+import GoogleLoginCallBack from '../pages/GoogleLoginCallBack';
+import VnPayPaymentCallBack from '../pages/VnPayPaymentCallBack';
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -65,6 +69,16 @@ const AppRouter = () => {
               </AuthenticatedRoute>
             }
           />
+          <Route
+            path="regist_company"
+            element={
+              <AuthenticatedRoute>
+                <RegistCompanyRoute>
+                  <RegistCompany />
+                </RegistCompanyRoute>
+              </AuthenticatedRoute>
+            }
+          />
         </Route>
         <Route
           path="/manage_company"
@@ -81,8 +95,11 @@ const AppRouter = () => {
         </Route>
 
         <Route path="/login" element={<Login />} />
+        <Route path='/login/oauth2/google' element={<GoogleLoginCallBack/>}/>
         <Route path="/register" element={<Register />} />
-        <Route path="/payment-result" element={<PaymentResult />} />
+        <Route path="/vnpay-payment-result" element={<AuthenticatedRoute>
+              <VnPayPaymentCallBack/>
+        </AuthenticatedRoute>} />
       </Routes>
     </BrowserRouter>
   );

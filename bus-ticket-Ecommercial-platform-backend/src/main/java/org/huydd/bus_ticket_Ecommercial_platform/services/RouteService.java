@@ -1,30 +1,19 @@
 package org.huydd.bus_ticket_Ecommercial_platform.services;
 
-import jakarta.persistence.EntityManager;
-import org.apache.commons.lang3.time.DateUtils;
 import org.huydd.bus_ticket_Ecommercial_platform.dao.RouteDAO;
-import org.huydd.bus_ticket_Ecommercial_platform.dtos.RouteDTO;
-import org.huydd.bus_ticket_Ecommercial_platform.exceptions.IdNotFoundException;
 import org.huydd.bus_ticket_Ecommercial_platform.mappers.RouteDTOMapper;
 import org.huydd.bus_ticket_Ecommercial_platform.pojo.Route;
-import org.huydd.bus_ticket_Ecommercial_platform.repositories.FilterAndPaginateRepository;
+import org.huydd.bus_ticket_Ecommercial_platform.pojo.Trip;
 import org.huydd.bus_ticket_Ecommercial_platform.repositories.RouteRepository;
-import org.huydd.bus_ticket_Ecommercial_platform.responseObjects.PageableResponse;
+import org.huydd.bus_ticket_Ecommercial_platform.responseModels.PageableResponse;
 import org.huydd.bus_ticket_Ecommercial_platform.specifications.RouteSpecification;
-import org.huydd.bus_ticket_Ecommercial_platform.specifications.TripSpecification;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-
-
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,8 +38,8 @@ public class RouteService extends AbstractPaginateAndFilterService {
     }
 
     @Cacheable(value = "route",key = "#id")
-    public RouteDTO getByIdToDto(Long id) {
-        return (RouteDTO) super.toDTO(super.getById(id));
+    public Route getById(Long id) {
+        return (Route) super.getById(id);
     }
 
     @Cacheable(value = "routes", keyGenerator = "redisKeyGenerator", condition = "#params.size() < 2")
@@ -60,14 +49,13 @@ public class RouteService extends AbstractPaginateAndFilterService {
     }
 
 
-    public Object getTrips(Long id) {
+    public List<Trip> getTrips(Long id) {
         return tripService.getByRouteId(id);
     }
 
-    public Object getByBusCompanyId(Long busCompanyId) {
-        return routeRepository.findAllByCompanyIdAndIsActive(busCompanyId, true)
-                .stream().map(routeDTOMapper)
-                .collect(Collectors.toList());
+    public List<Route> getByBusCompanyId(Long busCompanyId) {
+        return routeRepository.findAllByCompanyIdAndIsActive(busCompanyId, true);
+
     }
 
     public Object handleSearch(Map<String, String> params) {

@@ -1,13 +1,11 @@
 import {useContext, useState} from 'react';
 import './styles.css';
-
+import GoogleButton from 'react-google-button'
 import {LoadingContext, AuthenticationContext} from '../../config/context';
 import {apis, endpoints} from '../../config/apis';
 import {toast} from 'react-toastify';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import * as validator from '../../config/validator';
-import {GoogleLogin} from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -61,7 +59,7 @@ const Login = () => {
         });
       const data = response.data;
 
-      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('accessToken', data['accessToken']);
       setUser(data['userDetails']);
       navigator(from);
     } catch (error) {
@@ -69,36 +67,19 @@ const Login = () => {
       setLoading('none');
     }
   };
-  const handleLoginWithGoogle = async ({credential}) => {
-    try {
-      setLoading('flex');
-      const {email, family_name, given_name, name, picture} =
-        jwtDecode(credential);
-      const response = await apis.post(endpoints['auth']['loginWithGoogle'], {
-        firstName: family_name,
-        lastName: given_name,
-        username: email,
-        email: email,
-        avatar: picture,
-      });
-      const data = response['data'];
-      localStorage.setItem('accessToken', data['accessToken']);
-      setUser(data['userDetails']);
-      navigator(from);
-    } catch (ex) {
-      console.error(ex);
-      toast.error('Error when process your request', {
-        position: 'top-center',
-        autoClose: 4000,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-      });
-    } finally {
-      setLoading('none');
-    }
+  const handleLoginWithGoogle = async () => {
+      const state = new Date().getMilliseconds();
+      localStorage.setItem("oauth2State", state)
+      try {
+        const response = await apis.get(endpoints['auth'].createGoogleLoginUrl(state))
+        if (response['data']) {
+          const loginUrl = response['data']
+          window.location.replace(loginUrl)
+        }
+      } catch (error) {
+        localStorage.removeItem("oauth2State")
+        console.log(error)
+      }
   };
   return (
     <div className="row" style={{height: '100vh'}}>
@@ -165,23 +146,7 @@ const Login = () => {
                 <span className="d-block text-center my-4 text-muted">
                   -- hoặc --
                 </span>
-
-                <GoogleLogin
-                  onSuccess={(credentialResponse) => {
-                    handleLoginWithGoogle(credentialResponse);
-                  }}
-                  onError={() => {
-                    toast.error('Access denied when login with Google', {
-                      position: 'top-center',
-                      autoClose: 4000,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                      theme: 'colored',
-                    });
-                  }}
-                ></GoogleLogin>
+                <GoogleButton label="Đăng nhập với Google" onClick={handleLoginWithGoogle}/>
               </form>
             </div>
           </div>

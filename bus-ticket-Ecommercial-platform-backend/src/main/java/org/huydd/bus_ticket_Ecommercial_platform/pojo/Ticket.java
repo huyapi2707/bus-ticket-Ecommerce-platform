@@ -9,7 +9,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -58,8 +60,8 @@ public class Ticket implements Serializable {
     @JoinColumn(name = "trip_id", referencedColumnName = "id", nullable = false)
     private Trip trip;
 
-    @ManyToOne
-    @JoinColumn(name = "online_payment_result_id")
-    private OnlinePaymentResult onlinePaymentResult;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ticket_payment_results", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "payment_result_id"))
+    private List<OnlinePaymentResult> onlinePaymentResults = new ArrayList<>();
 
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'https://localhost:8080';
 const apiVersion = '/api/v1';
 const baseEndpoints = {
   auth: '/auth',
@@ -9,7 +9,7 @@ const baseEndpoints = {
   route: '/routes',
   trip: '/trips',
   ticket: '/tickets',
-  paymentMethod: '/payment_methods',
+  payment: '/payments',
   site: '/sites',
 };
 
@@ -17,8 +17,9 @@ const siteEndpoints = {
   list: `${apiVersion + baseEndpoints['site'] + '/'}`,
 };
 
-const paymentMethodEndpoints = {
-  list: `${apiVersion + baseEndpoints['paymentMethod'] + '/'}`,
+const paymentEndpoints = {
+  list: `${apiVersion + baseEndpoints['payment'] + '/'}`,
+  vnPayPaymentResult: (code, userId) => `${apiVersion + baseEndpoints['payment'] + '/VNPAY/result?' + "paymentCode=" + code + "&userId=" + userId}`
 };
 
 const ticketEndpoints = {
@@ -36,7 +37,8 @@ const ticketEndpoints = {
 const authEndpoints = {
   authenticate: `${apiVersion + baseEndpoints['auth'] + '/authenticate'}`,
   register: `${apiVersion + baseEndpoints['auth'] + '/register'}`,
-  loginWithGoogle: `${apiVersion + baseEndpoints['auth'] + '/oauth2/google'}`,
+  createGoogleLoginUrl: (state) => `${apiVersion + baseEndpoints['auth'] + '/oauth2/google?state=' + state}`,
+  verifyGoogleLogin: (code) => `${apiVersion + baseEndpoints['auth'] + '/oauth2/google/verify?code=' + code}`
 };
 
 const companyEndpoints = {
@@ -72,7 +74,7 @@ const endpoints = {
   route: routeEndpoints,
   trip: tripEndpoints,
   ticket: ticketEndpoints,
-  paymentMethods: paymentMethodEndpoints,
+  payment: paymentEndpoints,
   site: siteEndpoints,
 };
 

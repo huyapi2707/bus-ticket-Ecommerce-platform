@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Objects;
 
 @Entity
 @Table(name = "bus_station_trip", schema = "busdb", catalog = "")
